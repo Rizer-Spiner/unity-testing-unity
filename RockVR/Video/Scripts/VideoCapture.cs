@@ -318,6 +318,8 @@ namespace RockVR.Video
             finalTargetTexture.wrapMode = TextureWrapMode.Clamp;
             finalTargetTexture.filterMode = FilterMode.Trilinear;
             finalTargetTexture.autoGenerateMips = false;
+            
+            ///////////////////////IMPORTANT!!!!!!!!!!!!!!!!!!1
             // Pixels stored in frameRenderTexture(RenderTexture) always read by frameTexture(Texture2D).
             frameTexture = new Texture2D(frameWidth, frameHeight, TextureFormat.RGB24, false);
             frameTexture.hideFlags = HideFlags.HideAndDontSave;

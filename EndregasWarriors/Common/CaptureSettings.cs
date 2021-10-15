@@ -31,6 +31,7 @@
             _7680x4320,
             // Add your custom resolution here (modify frameWidth, frameHeight accordingly):
         }
+        
 
         public enum EncodeQualityType
         {
@@ -56,6 +57,12 @@
             _60,
         }
 
+        public enum StereoFormatType
+        {
+            FULL,
+            HALF
+        }
+
         public struct DefaultSettings
         {
             public FrameSizeType framesize => FrameSizeType._1280x720;
@@ -66,11 +73,16 @@
                 internal set => encodeQualityType = value;
             }
 
+            public StereoFormatType stereoFormatType => StereoFormatType.HALF;
+
             public TargetFramerateType framerate
             {
                 get => TargetFramerateType._60;
                 internal set => framerate = value;
             }
+
+            public int frameWith => 1280;
+            public int frameHeight => 720;
         }
     }
 }
