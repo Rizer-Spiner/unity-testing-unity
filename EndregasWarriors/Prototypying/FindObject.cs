@@ -1,54 +1,33 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
+using System.Threading;
 using RockVR.Common;
 using RockVR.Video;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityUXTesting.EndregasWarriors.Prototypying;
 
 
 public class FindObject : MonoBehaviour
 {
+    public VideoCapture _capture;
 
-    [SerializeField] 
-    private VideoCapture _capture;
-
-    [SerializeField] private AudioCapture _audioCapture;
+    private bool _lock;
+    public AudioCapture _audioCapture;
 
     private void Start()
     {
         Debug.Log("I am in Start");
         _capture = FindObjectOfType<VideoCapture>();
+        Debug.Log(_capture);
         _audioCapture = FindObjectOfType<AudioCapture>();
-        DontDestroyOnLoad(this);
-        SceneManager.sceneLoaded += FindComponents;
-    }
-
-    private void FindComponents(Scene arg0, LoadSceneMode arg1)
-    {
-        Debug.Log("I am in FindComponents");
-        _capture = FindObjectOfType<VideoCapture>();
-        _audioCapture = FindObjectOfType<AudioCapture>();
+        Debug.Log(_audioCapture);
+        if(!FindObjectOfType<RecordingBrain>()) Debug.Log("Nooooooo brain???+");
+        FindObjectOfType<RecordingBrain>()._Audio = _audioCapture;
+        FindObjectOfType<RecordingBrain>()._Video = _capture;
     }
 
 
-    private void Update()
-    {
-        if (!_capture)
-        {
-            Debug.Log("_capture not found");
-        }
-        else
-        {
-            Debug.Log("Found capture");
-        }
-
-        if (!_audioCapture)
-        {
-            Debug.Log("_audiocapture not found");
-        }
-        else
-        {
-            Debug.Log("Found audioCapture");
-        }
-    }
+    
 }

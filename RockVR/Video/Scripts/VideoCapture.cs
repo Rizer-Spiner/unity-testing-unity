@@ -178,7 +178,7 @@ namespace RockVR.Video
         public override void StartCapture()
         {
             // Check if we can start capture session.
-            if (status != VideoCaptureCtrl.StatusType.NOT_START &&
+            if (status != VideoCaptureCtrlBase.StatusType.NOT_START &&
                 status != VideoCaptureCtrl.StatusType.FINISH)
             {
                 Debug.LogWarning("[VideoCapture::StartCapture] Previous " +
@@ -516,6 +516,7 @@ namespace RockVR.Video
             {
                 StopCapture();
             }
+           
         }
         #endregion // Unity Lifecycle
 

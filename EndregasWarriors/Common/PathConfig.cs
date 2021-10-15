@@ -1,11 +1,8 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
+using UnityEngine;
 
-namespace RockVR.Video
+namespace UnityUXTesting.EndregasWarriors.Common
 {
-    /// <summary>
-    /// Config setup for video related path.
-    /// </summary>
     public class PathConfig
     {
         public static string persistentDataPath = Application.persistentDataPath;
