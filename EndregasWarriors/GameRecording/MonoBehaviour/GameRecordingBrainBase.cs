@@ -1,7 +1,7 @@
 ﻿using System;
-
-
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using UnityEngine;
 using UnityUXTesting.EndregasWarriors.Common;
 using UnityUXTesting.EndregasWarriors.GameRecording;
@@ -11,7 +11,8 @@ using static UnityUXTesting.EndregasWarriors.Common.CaptureSettings;
 public class GameRecordingBrainBase : UXTool
 {
 
-    #region Veriables
+    #region Variables
+    
     public  string finalVideoFilePath;
     private string videoFilePath;
     private string audioFilePath;
@@ -30,8 +31,7 @@ public class GameRecordingBrainBase : UXTool
     public TargetFramerateType _targetFramerate = TargetFramerateType._30;
 
     public EventDelegate eventDelegate;
-    
-   
+
 
     private int frameWidth
     {
@@ -105,17 +105,35 @@ public class GameRecordingBrainBase : UXTool
             return 0;
         }
     }
-    
+    public int GetFrameRate()
+    {
+        return targetFramerate;
+    }
 
+    public int GetFrameWidth()
+    {
+        return frameWidth;
+    }
+
+    public int GetFrameHeight()
+    {
+        return frameHeight;
+    }
+
+    public int GetAntiAliasing()
+    {
+        return antiAliasing;
+    }
     #endregion
     
     
-    protected void Awake()
+    protected override void Awake()
     {
         
-        videoFilePath = PathConfig.saveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5)); 
+        videoFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5)); 
         audioFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetWavFileName(Utils.StringUtils.GetRandomString(5));
         
+        Debug.Log("Step1");
         videoLibAPI = VideoCaptureLib_Get(
             frameWidth,
             frameHeight,
@@ -130,20 +148,21 @@ public class GameRecordingBrainBase : UXTool
                              "capture api failed!");
             return;
         }
-        
+        Debug.Log("Step2");
         audioLibAPI = AudioCaptureLib_Get(
             AudioSettings.outputSampleRate,
             audioFilePath,
             PathConfig.ffmpegPath);
         
-        if (audioLibAPI == System.IntPtr.Zero)
+        if (audioLibAPI == IntPtr.Zero)
         {
             Debug.LogWarning("[AudioCapture::StartCapture] Get native " +
                              "LibAudioCaptureAPI failed!");
             return;
         }
-
+        Debug.Log("Step3");
         _encoder = new VideoEncoder(videoLibAPI);
+        Debug.Log("Step4");
         base.Awake();
     }
 
@@ -154,6 +173,23 @@ public class GameRecordingBrainBase : UXTool
         AudioVideoMixer mixer = new AudioVideoMixer(videoFilePath, audioFilePath, finalVideoFilePath, bitrate);
         return mixer.Muxing();
     }
+
+    public void CloseLibAPIs()
+    {
+        VideoCaptureLib_Close(videoLibAPI);
+        AudioCaptureLib_Close(audioLibAPI);
+    }
+
+    public void CleanLibAPIs()
+    {
+        VideoCaptureLib_Clean(videoLibAPI);
+        AudioCaptureLib_Clean(audioLibAPI);
+        
+        if (File.Exists(videoFilePath)) File.Delete(videoFilePath);
+        if (File.Exists(audioFilePath)) File.Delete(audioFilePath);
+    }
+    
+ 
     
     
     #region Dll Import
@@ -161,7 +197,19 @@ public class GameRecordingBrainBase : UXTool
     static extern IntPtr VideoCaptureLib_Get(int width, int height, int rate, int proj, string path, string ffpath);
     
     [DllImport("VideoCaptureLib")]
+    static extern void VideoCaptureLib_Close(System.IntPtr api);
+    
+    [DllImport("VideoCaptureLib")]
+    static extern void VideoCaptureLib_Clean(System.IntPtr api);
+    
+    [DllImport("VideoCaptureLib")]
     static extern IntPtr AudioCaptureLib_Get(int rate, string path, string ffpath);
+    
+    [DllImport("VideoCaptureLib")]
+    static extern void AudioCaptureLib_Close(System.IntPtr api);
+    
+    [DllImport("VideoCaptureLib")]
+    static extern void AudioCaptureLib_Clean(System.IntPtr api);
 
     #endregion // Dll Import
 }

@@ -1,7 +1,6 @@
 ﻿using System;
-
+using System.Collections;
 using UnityEngine;
-using UnityUXTesting.EndregasWarriors;
 using UnityUXTesting.EndregasWarriors.Common;
 using static UnityUXTesting.EndregasWarriors.Common.CaptureSettings;
 
@@ -11,65 +10,154 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
     public class VideoCaptureTool : UXTool
     {
         #region Variables
-        
+
         private Camera captureCamera;
-       
-        private float deltaFrameTime;
-        private Texture2D frameTexture;
-        private CameraRenderer _cameraRenderer;
         private VideoEncoder _videoEncoder;
-        #endregion
-           
-        #region VideoCapture Core
 
-        public void StartCapture()
-        {
-            // filePath = filePath + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5));
-            // //todo: Get camera and rest of variables
-            // _cameraRenderer = new CameraRenderer(captureCamera, frameHeight, frameWidth, antiAliasing, targetFramerate,
-            //     filePath);
-            //
-            // frameTexture = new Texture2D(frameWidth, frameHeight, TextureFormat.RGB24, false);
-            // frameTexture.hideFlags = HideFlags.HideAndDontSave;
-            // frameTexture.wrapMode = TextureWrapMode.Clamp;
-            // frameTexture.filterMode = FilterMode.Trilinear;
-            // frameTexture.hideFlags = HideFlags.HideAndDontSave;
-            // frameTexture.anisoLevel = 0;
-            // // Reset tempory variables.
-            // capturingTime = 0f;
-            // capturedFrameCount = 0;
-            // encodedFrameCount = 0;
-            
-            // todo create VideoEncoder variable from brain and connect here
-            
-            // if (encodeThread != null)
-            // {
-            //     encodeThread.Abort();
-            // }
-            // // Start encoding thread.
-            // encodeThread = new Thread(FrameEncodeThreadFunction);
-            // encodeThread.Priority = System.Threading.ThreadPriority.Lowest;
-            // encodeThread.IsBackground = true;
-            // encodeThread.Start();
-        }
+        private Texture2D frameTexture;
+        private RenderTexture frameRenderTexture;
+
+        private float deltaFrameTime;
+        private bool isCreateRenderTexture;
+        private float capturingTime = 0f;
+        private bool isCapturingFrame = false;
+        private int capturedFrameCount;
+
+        public static EventDelegate eventDelegate = new EventDelegate();
+        private Material blitMaterial;
 
         #endregion
+
 
         #region UnityLifeCycle
-        private void Awake()
+
+        protected override void Awake()
         {
+            Debug.Log("Step5");
             captureCamera = GetComponent<Camera>();
-            // deltaFrameTime = 1f / targetFramerate;
-           
+            blitMaterial = new Material(Shader.Find("Hidden/BlitCopy"));
+            blitMaterial.hideFlags = HideFlags.HideAndDontSave;
             base.Awake();
         }
 
+        protected override void Start()
+        {
+            Debug.Log("Step6");
+            deltaFrameTime = 1f / GameRecordingBrain._instance.GetFrameRate();
+
+            if (captureCamera.targetTexture != null)
+            {
+                frameRenderTexture = captureCamera.targetTexture;
+                isCreateRenderTexture = false;
+            }
+            else
+            {
+                frameRenderTexture = new RenderTexture(GameRecordingBrain._instance.GetFrameWidth(),
+                    GameRecordingBrain._instance.GetFrameHeight(), 24);
+                frameRenderTexture.antiAliasing = GameRecordingBrain._instance.GetAntiAliasing();
+                frameRenderTexture.wrapMode = TextureWrapMode.Clamp;
+                frameRenderTexture.filterMode = FilterMode.Trilinear;
+                frameRenderTexture.hideFlags = HideFlags.HideAndDontSave;
+                // Make sure the rendertexture is created.
+                frameRenderTexture.Create();
+                isCreateRenderTexture = true;
+            }
+
+            frameTexture = new Texture2D(GameRecordingBrain._instance.GetFrameWidth(),
+                GameRecordingBrain._instance.GetFrameHeight(),
+                TextureFormat.RGB24,
+                false);
+
+            frameTexture.hideFlags = HideFlags.HideAndDontSave;
+            frameTexture.wrapMode = TextureWrapMode.Clamp;
+            frameTexture.filterMode = FilterMode.Trilinear;
+            frameTexture.hideFlags = HideFlags.HideAndDontSave;
+            frameTexture.anisoLevel = 0;
+
+            _videoEncoder = GameRecordingBrain._instance._encoder;
+            Debug.Log("Step6");
+            eventDelegate.onReady?.Invoke("video");
+            base.Start();
+        }
+
+        protected override void LateUpdate()
+        {
+            Debug.Log("Step8");
+            if (GameRecordingBrain._instance.status == StatusType.STARTED)
+            {
+                capturingTime += Time.deltaTime;
+                if (!isCapturingFrame)
+                {
+                    int totalRequiredFrameCount =
+                        (int) (capturingTime / deltaFrameTime);
+
+                    if (totalRequiredFrameCount > capturedFrameCount)
+                    {
+                        StartCoroutine(CaptureFrameAsync());
+                    }
+                }
+            }
+        }
+
+        protected override void OnDestroy()
+        {
+            if (frameRenderTexture != null && isCreateRenderTexture)
+            {
+                Destroy(frameRenderTexture);
+            }
+        }
+
+        private void OnRenderImage(RenderTexture src, RenderTexture dest)
+        {
+            Graphics.Blit(src, dest);// Render the screen.
+            Debug.Log("Step9");
+            if (GameRecordingBrain._instance.status == StatusType.STARTED)
+            {
+                Debug.Log("Step10");
+                frameRenderTexture.DiscardContents();
+                Graphics.SetRenderTarget(frameRenderTexture);
+                Graphics.Blit(src, blitMaterial);
+                Graphics.SetRenderTarget(null);
+                Debug.Log("Step11");
+            }
+         
+        }
+
         #endregion
 
 
-       
-        
-        
-       
+        private IEnumerator CaptureFrameAsync()
+        {
+            isCapturingFrame = true;
+            if (GameRecordingBrain._instance.status == StatusType.STARTED)
+            {
+                yield return new WaitForEndOfFrame();
+                CopyFrameTexture();
+                EnqueueFrameTexture();
+            }
+
+            isCapturingFrame = false;
+        }
+
+        private void CopyFrameTexture()
+        {
+            frameTexture.ReadPixels(new Rect(0, 0,
+                GameRecordingBrain._instance.GetFrameWidth(),
+                GameRecordingBrain._instance.GetFrameHeight()), 0, 0, false);
+
+            frameTexture.Apply();
+            // Restore RenderTexture states.
+            RenderTexture.active = null;
+        }
+
+        void EnqueueFrameTexture()
+        {
+            int totalRequiredFrameCount = (int) (capturingTime / deltaFrameTime);
+            int requiredFrameCount = totalRequiredFrameCount - capturedFrameCount;
+
+            _videoEncoder.EnqueueFrame(
+                new VideoEncoder.FrameData(frameTexture.GetRawTextureData(), requiredFrameCount));
+            capturedFrameCount = totalRequiredFrameCount;
+        }
     }
 }

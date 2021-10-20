@@ -8,32 +8,32 @@ using UnityEngine;
 /// </summary>
 public class UXTool : MonoBehaviour
 {
-    protected void Awake()
+    protected virtual void Awake()
     {
        
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
         
     }
 
-    protected void OnEnable()
+    protected virtual void OnEnable()
     {
         
     }
 
-    protected void OnDestroy()
+    protected  virtual void OnDestroy()
     {
         
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
         
     }
 
-    protected void LateUpdate()
+    protected virtual void LateUpdate()
     {
         
     }

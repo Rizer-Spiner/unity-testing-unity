@@ -22,7 +22,7 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
         private IntPtr libAPI; 
 
 
-        public CameraRenderer(Camera captureCamera, int frameHeight, int frameWidth, int antiAliasing, int targetFramerate, string filePath)
+        public CameraRenderer(Camera captureCamera, int frameHeight, int frameWidth, int antiAliasing, IntPtr libAPI)
         {
             this.captureCamera = captureCamera;
             
@@ -46,21 +46,8 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
             finalTargetTexture.wrapMode = TextureWrapMode.Clamp;
             finalTargetTexture.filterMode = FilterMode.Trilinear;
             finalTargetTexture.autoGenerateMips = false;
-            
-            libAPI = VideoCaptureLib_Get(
-                frameWidth,
-                frameHeight,
-                targetFramerate,
-                0,
-                filePath,
-                PathConfig.ffmpegPath);
-           
-            if (libAPI == IntPtr.Zero)
-            {
-                Debug.LogWarning("[VideoCapture::StartCapture] Get native " +
-                                 "capture api failed!");
-                return;
-            }
+
+            this.libAPI = libAPI;
         }
 
         public void SetStereoVideoFormat(RenderTexture frameRenderTexture)

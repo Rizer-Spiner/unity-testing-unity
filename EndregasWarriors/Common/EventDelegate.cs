@@ -23,5 +23,9 @@
         /// The action session complete delegate variable.
         /// </summary>
         public CompleteDelegate OnComplete;
+        
+        public delegate void ReadyDelegate(string type);
+
+        public ReadyDelegate onReady;
     }
 }
