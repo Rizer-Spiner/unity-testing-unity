@@ -37,40 +37,40 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
 
         private void FrameEncodeThreadFunction()
         {
-            while (GameRecordingBrain._instance.status == CaptureSettings.StatusType.STARTED || 
-                   GameRecordingBrain._instance.status == CaptureSettings.StatusType.PAUSED )
+            while (true)
             {
-                finishFlag = false;
-                if (frameQueue.Count > 0)
+                while (GameRecordingBrain._instance.status == CaptureSettings.StatusType.STARTED || 
+                       GameRecordingBrain._instance.status == CaptureSettings.StatusType.PAUSED )
                 {
+                    finishFlag = false;
+                    if (frameQueue.Count > 0)
+                    {
+                        EncodeFrame();
+                    }
+                    else
+                    {
+                        // Wait 1 second for captured frame.S
+                        Thread.Sleep(1000);
+                    }
+                }
+
+                while (GameRecordingBrain._instance.status == CaptureSettings.StatusType.STOPPED && frameQueue.Count > 0)
+                {
+                    finishFlag = false;
                     EncodeFrame();
                 }
-                else
+
+                if (GameRecordingBrain._instance.status != CaptureSettings.StatusType.NOT_START)
                 {
-                    // Wait 1 second for captured frame.
-                    Thread.Sleep(1000);
+                    finishFlag = true;
                 }
             }
-
-            while (GameRecordingBrain._instance.status == CaptureSettings.StatusType.STOPPED && frameQueue.Count > 0)
-            {
-                finishFlag = false;
-                EncodeFrame();
-            }
-
-            if (GameRecordingBrain._instance.status != CaptureSettings.StatusType.NOT_START)
-            {
-                finishFlag = true;
-   
-            }
-
-
         }
         
         private void EncodeFrame()
         {
             FrameData frame;
-            lock (this) {
+            lock (frameQueue) {
                 frame = frameQueue.Dequeue();
             }
             VideoCaptureLib_WriteFrames(videoLibAPI, frame.pixels, frame.count);
@@ -83,10 +83,15 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
 
         public void EnqueueFrame(FrameData newFrame)
         {
-            lock (this)
+            lock (frameQueue)
             {
                 frameQueue.Enqueue(newFrame);
             }
+        }
+
+        public void Abort()
+        {
+            encodeThread.Abort();
         }
 
 

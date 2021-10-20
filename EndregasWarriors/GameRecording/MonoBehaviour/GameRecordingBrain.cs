@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using RockVR.Video;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -14,8 +15,9 @@ public class GameRecordingBrain : GameRecordingBrainBase
     private bool hasAwakenBefore;
     private bool cameraRecorderReady;
     private bool audioRecorderReady;
-    
+
     private Thread garbageCollectionThread;
+    private bool areComponentsInitialized = false;
 
 
     protected override void Awake()
@@ -31,7 +33,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
             Destroy(gameObject);
             return;
         }
-        
+
         garbageCollectionThread = new Thread(GarbageCollectionThreadFunction);
         garbageCollectionThread.Priority = System.Threading.ThreadPriority.Lowest;
         garbageCollectionThread.IsBackground = true;
@@ -40,6 +42,8 @@ public class GameRecordingBrain : GameRecordingBrainBase
         if (!hasAwakenBefore)
         {
             base.Awake();
+            VideoCaptureTool.eventDelegate.onReady += SetComponentReady;
+            AudioCaptureTool.eventDelegate.onReady += SetComponentReady;
             hasAwakenBefore = true;
         }
     }
@@ -49,52 +53,63 @@ public class GameRecordingBrain : GameRecordingBrainBase
         SceneManager.sceneUnloaded += arg0 => status = CaptureSettings.StatusType.PAUSED;
         Application.focusChanged += hasFocus =>
         {
-            if (hasFocus) status = CaptureSettings.StatusType.STARTED;
-
+            if (!areComponentsInitialized) return;
+            if (hasFocus)
+            {
+                status = CaptureSettings.StatusType.STARTED;
+            }
             else status = CaptureSettings.StatusType.PAUSED;
+
         };
-        VideoCaptureTool.eventDelegate.onReady += SetComponentReady;
-        // AudioCaptureTool.eventDelegate.onReady += SetComponentReady;
+        
 
 #if !UNITY_EDITOR
         Application.wantsToQuit += WantsToQuit;
 #else
-        EditorApplication.playModeStateChanged += change => WantsToQuit();
+        EditorApplication.playModeStateChanged += change => ExitPlayMode(change);
 #endif
+    }
+
+    private void ExitPlayMode(PlayModeStateChange change)
+    {
+        if (change == PlayModeStateChange.ExitingPlayMode) WantsToQuit();
     }
 
     private void SetComponentReady(string type)
     {
         if (type.Equals("video"))
             cameraRecorderReady = true;
-        // else audioRecorderReady = true;
+        else audioRecorderReady = true;
 
-        if (cameraRecorderReady)
-            // if (cameraRecorderReady && audioRecorderReady)
+        if (cameraRecorderReady && audioRecorderReady)
         {
-            Debug.Log("Step7");
+            areComponentsInitialized = true;
             status = CaptureSettings.StatusType.STARTED;
             cameraRecorderReady = false;
-            // audioRecorderReady = false;
+            audioRecorderReady = false;
         }
     }
 
     private bool WantsToQuit()
     {
         status = CaptureSettings.StatusType.STOPPED;
+        Debug.Log("Something wants to quit");
         while (!_encoder.FinishEncoding())
         {
             Thread.Sleep(1000);
         }
 
+        _encoder.Abort();
         CloseLibAPIs();
         MixAudioWithVideo();
         CleanLibAPIs();
+        garbageCollectionThread.Abort();
         status = CaptureSettings.StatusType.FINISH;
-        //todo: send Video
+        // //todo: send Video
         return true;
     }
-    
+
+
     void GarbageCollectionThreadFunction()
     {
         while (status == CaptureSettings.StatusType.STARTED)
@@ -104,4 +119,5 @@ public class GameRecordingBrain : GameRecordingBrainBase
             System.GC.Collect();
         }
     }
+    
 }
