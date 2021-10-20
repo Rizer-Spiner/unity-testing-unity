@@ -77,7 +77,6 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
             _videoEncoder = GameRecordingBrain._instance._encoder;
             // Debug.Log("Step6 -second");
             eventDelegate.onReady?.Invoke("video");
-            Debug.Log("Helllllllooo:" +GameRecordingBrain._instance.status);
             base.Start();
         }
 

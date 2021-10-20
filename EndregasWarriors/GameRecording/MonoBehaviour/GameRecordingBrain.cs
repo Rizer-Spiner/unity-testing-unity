@@ -17,7 +17,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
     private bool audioRecorderReady;
 
     private Thread garbageCollectionThread;
-    private bool areComponentsInitialized = false;
+    private bool areComponentsInitialized;
 
 
     protected override void Awake()
@@ -59,9 +59,8 @@ public class GameRecordingBrain : GameRecordingBrainBase
                 status = CaptureSettings.StatusType.STARTED;
             }
             else status = CaptureSettings.StatusType.PAUSED;
-
         };
-        
+
 
 #if !UNITY_EDITOR
         Application.wantsToQuit += WantsToQuit;
@@ -70,10 +69,6 @@ public class GameRecordingBrain : GameRecordingBrainBase
 #endif
     }
 
-    private void ExitPlayMode(PlayModeStateChange change)
-    {
-        if (change == PlayModeStateChange.ExitingPlayMode) WantsToQuit();
-    }
 
     private void SetComponentReady(string type)
     {
@@ -90,20 +85,31 @@ public class GameRecordingBrain : GameRecordingBrainBase
         }
     }
 
+    private void ExitPlayMode(PlayModeStateChange change)
+    {
+        if (change == PlayModeStateChange.ExitingPlayMode) WantsToQuit();
+    }
+
     private bool WantsToQuit()
     {
         status = CaptureSettings.StatusType.STOPPED;
-        Debug.Log("Something wants to quit");
         while (!_encoder.FinishEncoding())
         {
             Thread.Sleep(1000);
         }
 
-        _encoder.Abort();
+
         CloseLibAPIs();
         MixAudioWithVideo();
         CleanLibAPIs();
         garbageCollectionThread.Abort();
+        AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
+        VideoCaptureTool.eventDelegate.onReady -= SetComponentReady;
+#if !UNITY_EDITOR
+        Application.wantsToQuit -= WantsToQuit;
+#else
+        EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
+#endif
         status = CaptureSettings.StatusType.FINISH;
         // //todo: send Video
         return true;
@@ -112,12 +118,13 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     void GarbageCollectionThreadFunction()
     {
-        while (status == CaptureSettings.StatusType.STARTED)
+        while (true)
         {
-            // TODO, adjust gc interval dynamic.
-            Thread.Sleep(1000);
-            System.GC.Collect();
+            if (status == CaptureSettings.StatusType.STARTED)
+            {
+                Thread.Sleep(1000);
+                System.GC.Collect();
+            }
         }
     }
-    
 }

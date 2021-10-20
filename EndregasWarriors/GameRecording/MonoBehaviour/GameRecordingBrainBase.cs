@@ -133,7 +133,7 @@ public class GameRecordingBrainBase : UXTool
         videoFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5)); 
         audioFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetWavFileName(Utils.StringUtils.GetRandomString(5));
         
-        //Debug.Log("Step1");
+
         videoLibAPI = VideoCaptureLib_Get(
             GameRecordingBrain._instance.GetFrameWidth(),
             GameRecordingBrain._instance.GetFrameHeight(),
@@ -148,7 +148,7 @@ public class GameRecordingBrainBase : UXTool
                              "capture api failed!");
             return;
         }
-        //Debug.Log("Step2");
+
         audioLibAPI = AudioCaptureLib_Get(
             AudioSettings.outputSampleRate,
             audioFilePath,
@@ -160,9 +160,8 @@ public class GameRecordingBrainBase : UXTool
                              "LibAudioCaptureAPI failed!");
             return;
         }
-        //Debug.Log("Step3");
+
         _encoder = new VideoEncoder(videoLibAPI);
-        //Debug.Log("Step4");
         base.Awake();
     }
 
@@ -176,6 +175,8 @@ public class GameRecordingBrainBase : UXTool
 
     public void CloseLibAPIs()
     {
+        _encoder.Abort();
+        
         VideoCaptureLib_Close(videoLibAPI);
         AudioCaptureLib_Close(audioLibAPI);
     }
@@ -185,8 +186,8 @@ public class GameRecordingBrainBase : UXTool
         VideoCaptureLib_Clean(videoLibAPI);
         AudioCaptureLib_Clean(audioLibAPI);
         
-        // if (File.Exists(videoFilePath)) File.Delete(videoFilePath);
-        // if (File.Exists(audioFilePath)) File.Delete(audioFilePath);
+        if (File.Exists(videoFilePath)) File.Delete(videoFilePath);
+        if (File.Exists(audioFilePath)) File.Delete(audioFilePath);
     }
     
  
