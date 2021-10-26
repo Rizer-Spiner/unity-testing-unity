@@ -33,7 +33,6 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
 
         protected override void Awake()
         {
-            // Debug.Log("Step5");
             captureCamera = GetComponent<Camera>();
             blitMaterial = new Material(Shader.Find("Hidden/BlitCopy"));
             blitMaterial.hideFlags = HideFlags.HideAndDontSave;
@@ -42,7 +41,6 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
 
         protected override void Start()
         {
-            // Debug.Log("Step6");
             deltaFrameTime = 1f / GameRecordingBrain._instance.GetFrameRate();
 
             if (captureCamera.targetTexture != null)
@@ -75,14 +73,12 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
             frameTexture.anisoLevel = 0;
 
             _videoEncoder = GameRecordingBrain._instance._encoder;
-            // Debug.Log("Step6 -second");
             eventDelegate.onReady?.Invoke("video");
             base.Start();
         }
 
         protected override void LateUpdate()
         {
-            // Debug.Log("Step8");
             if (GameRecordingBrain._instance.status == StatusType.STARTED)
             {
                 capturingTime += Time.deltaTime;
@@ -110,15 +106,12 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
             Graphics.Blit(src, dest);// Render the screen.
-            //Debug.Log("Step9");
             if (GameRecordingBrain._instance.status == StatusType.STARTED)
             {
-                //Debug.Log("Step10");
                 frameRenderTexture.DiscardContents();
                 Graphics.SetRenderTarget(frameRenderTexture);
                 Graphics.Blit(src, blitMaterial);
                 Graphics.SetRenderTarget(null);
-                //Debug.Log("Step11");
             }
          
         }
@@ -135,7 +128,6 @@ namespace UnityUXTesting.EndregasWarriors.GameRecording
                 CopyFrameTexture();
                 EnqueueFrameTexture();
             }
-
             isCapturingFrame = false;
         }
 

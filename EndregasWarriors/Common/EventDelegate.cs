@@ -9,7 +9,7 @@
         /// <param name='error'>
         /// The code information passed to delegate when error occurs.
         /// </param>
-        public delegate void ErrorDelegate(int error);
+        public delegate void ErrorDelegate(CaptureSettings.ErrorCodeType error);
         /// <summary>
         /// To be notified when the action is complete, register a delegate 
         /// using this signature by calling <c>OnComplete += </c>.
@@ -27,5 +27,9 @@
         public delegate void ReadyDelegate(string type);
 
         public ReadyDelegate onReady;
+
+        public delegate void GameRecordingComplete(string finalFilePath);
+
+        public GameRecordingComplete gameRecComplete;
     }
 }

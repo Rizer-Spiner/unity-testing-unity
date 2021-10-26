@@ -13,6 +13,7 @@ public class GameRecordingBrainBase : UXTool
 
     #region Variables
     
+    [NonSerialized]
     public  string finalVideoFilePath;
     private string videoFilePath;
     private string audioFilePath;
@@ -24,7 +25,6 @@ public class GameRecordingBrainBase : UXTool
     [NonSerialized]
     public IntPtr audioLibAPI;
     
-    public StereoFormatType stereoFormat = StereoFormatType.HALF;
     public FrameSizeType frameSize = FrameSizeType._1280x720;
     public AntiAliasingType _antiAliasing = AntiAliasingType._4;
     public EncodeQualityType encodeQuality = EncodeQualityType.Medium;

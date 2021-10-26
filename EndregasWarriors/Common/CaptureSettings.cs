@@ -63,26 +63,5 @@
             HALF
         }
 
-        public struct DefaultSettings
-        {
-            public FrameSizeType framesize => FrameSizeType._1280x720;
-
-            public EncodeQualityType encodeQualityType
-            {
-                get => EncodeQualityType.High;
-                internal set => encodeQualityType = value;
-            }
-
-            public StereoFormatType stereoFormatType => StereoFormatType.HALF;
-
-            public TargetFramerateType framerate
-            {
-                get => TargetFramerateType._60;
-                internal set => framerate = value;
-            }
-
-            public int frameWith => 1280;
-            public int frameHeight => 720;
-        }
-    }
+      }
 }

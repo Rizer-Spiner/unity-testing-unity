@@ -1,5 +1,4 @@
 ﻿using System.Threading;
-using RockVR.Video;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,8 +17,11 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     private Thread garbageCollectionThread;
     private bool areComponentsInitialized;
-
-
+    
+    public static EventDelegate eventDelegate = new EventDelegate();
+    
+    
+    
     protected override void Awake()
     {
         status = CaptureSettings.StatusType.NOT_START;
@@ -100,7 +102,10 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
 
         CloseLibAPIs();
-        MixAudioWithVideo();
+        if(MixAudioWithVideo())
+            eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
+        else eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_AUDIO_MERGE_TIMEOUT);
+        
         CleanLibAPIs();
         garbageCollectionThread.Abort();
         AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
@@ -111,7 +116,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
         EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
 #endif
         status = CaptureSettings.StatusType.FINISH;
-        // //todo: send Video
+     
         return true;
     }
 
