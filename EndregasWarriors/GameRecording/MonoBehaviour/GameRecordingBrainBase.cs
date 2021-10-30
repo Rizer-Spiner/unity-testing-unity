@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using UnityEngine;
 using UnityUXTesting.EndregasWarriors.Common;
 using UnityUXTesting.EndregasWarriors.GameRecording;
 using static UnityUXTesting.EndregasWarriors.Common.CaptureSettings;
+
 
 
 public class GameRecordingBrainBase : UXTool
@@ -31,6 +31,8 @@ public class GameRecordingBrainBase : UXTool
     public TargetFramerateType _targetFramerate = TargetFramerateType._30;
 
     public EventDelegate eventDelegate;
+
+
 
 
     private int frameWidth

@@ -1,9 +1,14 @@
 ﻿using System.Collections;
+using System.IO;
 using System.Threading;
+using Retrofit;
+using Retrofit.HttpImpl;
+using UniRx;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityUXTesting.EndregasWarriors.Common;
+using UnityUXTesting.EndregasWarriors.DataSending;
 using UnityUXTesting.EndregasWarriors.GameRecording;
 
 
@@ -18,11 +23,11 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     private Thread garbageCollectionThread;
     private bool areComponentsInitialized;
-    
+
     public static EventDelegate eventDelegate = new EventDelegate();
-    
-    
-    
+    private IGameRecordingService _service;
+
+
     protected override void Awake()
     {
         status = CaptureSettings.StatusType.NOT_START;
@@ -37,16 +42,23 @@ public class GameRecordingBrain : GameRecordingBrainBase
             return;
         }
 
-        garbageCollectionThread = new Thread(GarbageCollectionThreadFunction);
-        garbageCollectionThread.Priority = System.Threading.ThreadPriority.Lowest;
-        garbageCollectionThread.IsBackground = true;
-        garbageCollectionThread.Start();
-
         if (!hasAwakenBefore)
         {
             base.Awake();
             VideoCaptureTool.eventDelegate.onReady += SetComponentReady;
             AudioCaptureTool.eventDelegate.onReady += SetComponentReady;
+
+            garbageCollectionThread = new Thread(GarbageCollectionThreadFunction);
+            garbageCollectionThread.Priority = System.Threading.ThreadPriority.Lowest;
+            garbageCollectionThread.IsBackground = true;
+            garbageCollectionThread.Start();
+
+            RetrofitAdapter adapter = new RetrofitAdapter.Builder()
+                .SetEndpoint("http://" + PathConfig.serverAddress)
+                .SetClient(new UnityWebRequestImpl())
+                .Build();
+            _service = adapter.Create<IGameRecordingService>();
+
             hasAwakenBefore = true;
         }
     }
@@ -99,15 +111,30 @@ public class GameRecordingBrain : GameRecordingBrainBase
         while (!_encoder.FinishEncoding())
         {
             // Thread.Sleep(1000);
-            
         }
 
-
         CloseLibAPIs();
-        if(MixAudioWithVideo())
-            eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
+        if (MixAudioWithVideo())
+        {
+            FileInfo fileInfo = new FileInfo(finalVideoFilePath);
+            MultipartBody multipartBody = new MultipartBody(fileInfo);
+            var ob = _service.PostPlayRun(multipartBody);
+
+            ob.SubscribeOn(Scheduler.ThreadPool)
+                .ObserveOn(Scheduler.MainThread)
+                .Subscribe(data =>
+                {
+                    Debug.Log("Response:  " + data);
+
+                    eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
+                }, error =>
+                {
+                    Debug.Log("Response: " + error);
+                    eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_NOT_SENT);
+                });
+        }
         else eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_AUDIO_MERGE_TIMEOUT);
-        
+
         CleanLibAPIs();
         garbageCollectionThread.Abort();
         AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
@@ -118,15 +145,9 @@ public class GameRecordingBrain : GameRecordingBrainBase
         EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
 #endif
         status = CaptureSettings.StatusType.FINISH;
-     
+
         return true;
     }
-
-    private IEnumerator Wait()
-    {
-        yield return new WaitForSeconds(1);
-    }
-
 
     void GarbageCollectionThreadFunction()
     {

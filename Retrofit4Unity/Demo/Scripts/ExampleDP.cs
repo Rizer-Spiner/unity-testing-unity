@@ -103,7 +103,7 @@ public class ExampleDP : MonoBehaviour
     private void OnMultipartFileUpload()
     {
         RestResponsePanel();
-        string filePath = Application.dataPath + "/Retrofit4Unity/Demo/Textures/error.png";
+        string filePath = Application.dataPath + "/UnityUXTesting/Retrofit4Unity/Demo/Textures/error.png";
         FileInfo fileInfo = new FileInfo(filePath);
         if (!fileInfo.Exists)
         {
