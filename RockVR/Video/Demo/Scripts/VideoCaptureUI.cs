@@ -59,9 +59,9 @@ namespace RockVR.Video.Demo
 #if UNITY_5_6_OR_NEWER
                         // Set root folder.
                         isPlayVideo = true;
-                        VideoPlayerRockVR.instance.SetRootFolder();
+                        VideoPlayer.instance.SetRootFolder();
                         // Play capture video.
-                        VideoPlayerRockVR.instance.PlayVideo();
+                        VideoPlayer.instance.PlayVideo();
                     }
                 }
                 else
@@ -69,9 +69,9 @@ namespace RockVR.Video.Demo
                     if (GUI.Button(new Rect(10, Screen.height - 60, 150, 50), "Next Video"))
                     {
                         // Turn to next video.
-                        VideoPlayerRockVR.instance.NextVideo();
+                        VideoPlayer.instance.NextVideo();
                         // Play capture video.
-                        VideoPlayerRockVR.instance.PlayVideo();
+                        VideoPlayer.instance.PlayVideo();
 #else
                         // Open video save directory.
                         Process.Start(PathConfig.saveFolder);

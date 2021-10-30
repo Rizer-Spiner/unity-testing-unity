@@ -477,7 +477,6 @@ namespace RockVR.Video
             captureCamera = GetComponent<Camera>();
             deltaFrameTime = 1f / targetFramerate;
             eventDelegate = new EventDelegate();
-            DontDestroyOnLoad(this);
         }
         /// <summary>
         /// Start capture video.

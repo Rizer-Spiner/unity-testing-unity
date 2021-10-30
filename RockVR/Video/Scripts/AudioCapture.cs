@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.IO;
 using System.Runtime.InteropServices;
 using RockVR.Common;
@@ -101,12 +100,6 @@ namespace RockVR.Video
                 Debug.Log("[AudioCapture::StopCapture] Encode process finish!");
             }
         }
-
-        private void Start()
-        {
-            DontDestroyOnLoad(this);
-        }
-
         /// <summary>
         /// Pause capture audio.
         /// </summary>

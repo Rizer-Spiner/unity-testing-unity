@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections;
+using System.Threading;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -97,7 +98,8 @@ public class GameRecordingBrain : GameRecordingBrainBase
         status = CaptureSettings.StatusType.STOPPED;
         while (!_encoder.FinishEncoding())
         {
-            Thread.Sleep(1000);
+            // Thread.Sleep(1000);
+            
         }
 
 
@@ -118,6 +120,11 @@ public class GameRecordingBrain : GameRecordingBrainBase
         status = CaptureSettings.StatusType.FINISH;
      
         return true;
+    }
+
+    private IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(1);
     }
 
 

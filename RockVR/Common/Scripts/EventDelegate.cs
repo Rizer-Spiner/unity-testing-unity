@@ -15,7 +15,6 @@
         /// using this signature by calling <c>OnComplete += </c>.
         /// </summary>
         public delegate void CompleteDelegate();
-
         /// <summary>
         /// The action session error delegate variable.
         /// </summary>
@@ -24,9 +23,5 @@
         /// The action session complete delegate variable.
         /// </summary>
         public CompleteDelegate OnComplete;
-        
-        
-     
-
     }
 }

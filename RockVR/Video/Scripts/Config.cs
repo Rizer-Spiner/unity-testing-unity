@@ -26,7 +26,7 @@ namespace RockVR.Video
                 {
                     saveFolder = persistentDataPath + "/RockVR/Video/";
                 }
-                return saveFolder;
+                return SaveFolder;
 #else
                 if (saveFolder == "")
                 {
@@ -56,6 +56,16 @@ namespace RockVR.Video
 #endif
             }
         }
+        ///// <summary>
+        ///// The <c>YoutubeUploader</c> script path.
+        ///// </summary>
+        //public static string youtubeUploader
+        //{
+        //    get
+        //    {
+        //        return streamingAssetsPath + "/RockVR/Scripts/YoutubeUploader.py";
+        //    }
+        //}
 
         /// <summary>
         /// The Spatial Media Metadata Injector path.
