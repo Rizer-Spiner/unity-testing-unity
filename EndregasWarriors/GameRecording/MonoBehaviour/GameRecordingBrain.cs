@@ -6,6 +6,7 @@ using Retrofit.HttpImpl;
 using UniRx;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityUXTesting.EndregasWarriors.Common;
 using UnityUXTesting.EndregasWarriors.DataSending;
@@ -116,10 +117,14 @@ public class GameRecordingBrain : GameRecordingBrainBase
         CloseLibAPIs();
         if (MixAudioWithVideo())
         {
+            
+          
             FileInfo fileInfo = new FileInfo(finalVideoFilePath);
             MultipartBody multipartBody = new MultipartBody(fileInfo);
             var ob = _service.PostPlayRun(multipartBody);
 
+
+            Debug.Log("I am here dude!");
             ob.SubscribeOn(Scheduler.ThreadPool)
                 .ObserveOn(Scheduler.MainThread)
                 .Subscribe(data =>
@@ -145,7 +150,6 @@ public class GameRecordingBrain : GameRecordingBrainBase
         EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
 #endif
         status = CaptureSettings.StatusType.FINISH;
-
         return true;
     }
 

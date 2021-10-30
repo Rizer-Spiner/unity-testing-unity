@@ -166,7 +166,7 @@ namespace Retrofit.HttpImpl
             bool isError = true;
             errorMessage = string.Empty;
             UnityWebRequest www = result as UnityWebRequest;
-            if (!www.isError)
+            if (!www.isNetworkError)
             {
                 isError = false;
             }
