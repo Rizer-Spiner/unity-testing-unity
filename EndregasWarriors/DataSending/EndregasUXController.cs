@@ -30,7 +30,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
         private void OnEnable()
         {
 #if !UNITY_EDITOR
-            Application.wantsToQuit += KillQuitProcess();
+            Application.wantsToQuit += ApplicationOnwantsToQuit;
 #else
             EditorApplication.playModeStateChanged += change => ExitPlayMode(change);
 #endif
@@ -38,6 +38,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             GameRecordingBrain.eventDelegate.gameRecComplete += GameRecComplete;
             GameRecordingBrain.eventDelegate.OnError += OnError;
         }
+
 
         private void Start()
         {
@@ -49,14 +50,21 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             yield return new WaitUntil(() =>
             {
                 if (permissionsGranted == waitingPermissions && userRequestedQuit)
+                {
                     return true;
+#if !UNITY_EDITOR
+            Application.wantsToQuit -= ApplicationOnwantsToQuit;
+#else
+                    EditorApplication.playModeStateChanged -= change2 => ExitPlayMode(change2);
+
+#endif
+                }
                 else return false;
             });
-            Debug.Log("I am readyyyyyyyyyyyyy!");
 #if !UNITY_EDITOR
             Application.Quit();
 #else
-            EditorApplication.ExitPlaymode();
+            EditorApplication.isPlaying = false;
 #endif
         }
 
@@ -65,27 +73,17 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             if (change == PlayModeStateChange.ExitingPlayMode && !userRequestedQuit)
             {
                 userRequestedQuit = true;
-                Debug.Log("You shall not pass!");
                 EditorApplication.isPlaying = true;
-                return;
-            }
-
-            if (permissionsGranted == waitingPermissions && userRequestedQuit)
-            {
-                EditorApplication.isPlaying = false;
             }
         }
-
-
-        private bool KillQuitProcess()
+        private bool ApplicationOnwantsToQuit()
         {
             if (!userRequestedQuit)
             {
                 userRequestedQuit = true;
-                Debug.Log("You shall not pass!");
                 return false;
             }
-            else return true;
+            else return false;
         }
 
 
@@ -93,31 +91,13 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
         {
             // ToDo: pop-up with informations
             Debug.Log("Error on sending video Data");
-            permissionsGranted++;
-#if !UNITY_EDITOR
-            Application.wantsToQuit -= KillQuitProcess();
-#else
-            EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
-#endif
-
             GameRecordingBrain.eventDelegate.gameRecComplete -= GameRecComplete;
             GameRecordingBrain.eventDelegate.OnError -= OnError;
-#if !UNITY_EDITOR
-            Application.Quit();
-#else
-            EditorApplication.ExitPlaymode();
-#endif
+            permissionsGranted++;
         }
 
         private void GameRecComplete(string finalfilepath)
         {
-            Debug.Log("Permission granted");
-#if !UNITY_EDITOR
-            Application.wantsToQuit -= KillQuitProcess();
-#else
-            EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
-#endif
-
             GameRecordingBrain.eventDelegate.gameRecComplete -= GameRecComplete;
             GameRecordingBrain.eventDelegate.OnError -= OnError;
             permissionsGranted++;
