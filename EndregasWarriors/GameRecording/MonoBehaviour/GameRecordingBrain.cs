@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
-
 using System.IO;
-
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
@@ -16,6 +14,7 @@ using UnityUXTesting.EndregasWarriors.GameRecording;
 public class GameRecordingBrain : GameRecordingBrainBase
 {
     public CaptureSettings.StatusType status;
+    public PathConfigScriptable configuration;
 
     public static GameRecordingBrain _instance;
     private bool hasAwakenBefore;
@@ -25,8 +24,6 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     private Thread garbageCollectionThread;
     private bool areComponentsInitialized;
-
-    public static EventDelegate eventDelegate = new EventDelegate();
     private IGameRecordingService _service;
 
 
@@ -55,6 +52,8 @@ public class GameRecordingBrain : GameRecordingBrainBase
             garbageCollectionThread.IsBackground = true;
             garbageCollectionThread.Start();
             hasAwakenBefore = true;
+
+            _service = new GameRecordingServiceImpl(configuration);
         }
     }
 
@@ -123,7 +122,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
             AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
             VideoCaptureTool.eventDelegate.onReady -= SetComponentReady;
 #if !UNITY_EDITOR
-        Application.wantsToQuit -= WantsToQuit;
+            Application.wantsToQuit -= WantsToQuit;
 #else
             EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
 #endif
@@ -135,27 +134,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     private IEnumerator PostVideo()
     {
-        WWWForm form = new WWWForm();
-        form.AddBinaryData("file", File.ReadAllBytes(finalVideoFilePath), "PlayRun2Identifier.mp4");
-        
-        UnityWebRequest request = UnityWebRequest.Post(PathConfig.serverAddress + "/video?Game=versioned&Build=1", form);
-        yield return request.SendWebRequest();
-        
-        if (request.isNetworkError || request.isHttpError)
-        {
-            Debug.Log("Response: " + request.error);
-            Debug.Log("Response: " + request.url);
-            Debug.Log("Response: " + request.uri);
-            Debug.Log("Response: " + request.downloadHandler.text);
-
-            eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_NOT_SENT);
-        }
-        else
-        {
-            Debug.Log("Response:  " + request.downloadHandler.text);
-            eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
-        }
-        
+        yield return _service.PostPlayThrough(finalVideoFilePath);
         File.Delete(finalVideoFilePath);
     }
 

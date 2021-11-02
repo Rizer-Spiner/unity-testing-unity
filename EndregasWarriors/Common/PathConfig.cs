@@ -12,7 +12,28 @@ namespace UnityUXTesting.EndregasWarriors.Common
         public static string saveFolder="";
         public static string lastVideoFile = "";
         public static string serverAddress = "http://localhost:8080";
-        
+        public static string gameName = "TestGame";
+        public static string buildID = "BuildNr1";
+
+
+        public static string GameName
+        {
+            get => gameName;
+            set => gameName = value;
+        }
+
+        public static string BuildID
+        {
+            get => buildID;
+            set => buildID = value;
+        }
+
+        public static string ServerAddress
+        {
+            get => serverAddress;
+            set => serverAddress = value;
+        }
+
         public static string SaveFolder
         {
             get
@@ -69,5 +90,7 @@ namespace UnityUXTesting.EndregasWarriors.Common
 #endif
             }
         }
+        
+        
     }
 }

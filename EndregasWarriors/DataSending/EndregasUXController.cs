@@ -35,8 +35,8 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             EditorApplication.playModeStateChanged += change => ExitPlayMode(change);
 #endif
 
-            GameRecordingBrain.eventDelegate.gameRecComplete += GameRecComplete;
-            GameRecordingBrain.eventDelegate.OnError += OnError;
+            GameRecordingServiceImpl.eventDelegate.gameRecComplete += GameRecComplete;
+            GameRecordingServiceImpl.eventDelegate.OnError += OnError;
         }
 
 
@@ -51,12 +51,11 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             {
                 if (permissionsGranted == waitingPermissions && userRequestedQuit)
                 {
-                    return true;
 #if !UNITY_EDITOR
-            Application.wantsToQuit -= ApplicationOnwantsToQuit;
+                    Application.wantsToQuit -= ApplicationOnwantsToQuit;
 #else
                     EditorApplication.playModeStateChanged -= change2 => ExitPlayMode(change2);
-
+                    return true;
 #endif
                 }
                 else return false;
@@ -76,6 +75,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
                 EditorApplication.isPlaying = true;
             }
         }
+
         private bool ApplicationOnwantsToQuit()
         {
             if (!userRequestedQuit)
@@ -91,15 +91,15 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
         {
             // ToDo: pop-up with informations
             Debug.Log("Error on sending video Data");
-            GameRecordingBrain.eventDelegate.gameRecComplete -= GameRecComplete;
-            GameRecordingBrain.eventDelegate.OnError -= OnError;
+            GameRecordingServiceImpl.eventDelegate.gameRecComplete -= GameRecComplete;
+            GameRecordingServiceImpl.eventDelegate.OnError -= OnError;
             permissionsGranted++;
         }
 
         private void GameRecComplete(string finalfilepath)
         {
-            GameRecordingBrain.eventDelegate.gameRecComplete -= GameRecComplete;
-            GameRecordingBrain.eventDelegate.OnError -= OnError;
+            GameRecordingServiceImpl.eventDelegate.gameRecComplete -= GameRecComplete;
+            GameRecordingServiceImpl.eventDelegate.OnError -= OnError;
             permissionsGranted++;
         }
     }
