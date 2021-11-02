@@ -23,8 +23,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             }
             else
             {
-                Destroy(gameObject);
-                return;
+                Destroy(this);
             }
         }
 
@@ -33,7 +32,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
 #if !UNITY_EDITOR
             Application.wantsToQuit += KillQuitProcess();
 #else
-            EditorApplication.playModeStateChanged +=  change => ExitPlayMode(change);
+            EditorApplication.playModeStateChanged += change => ExitPlayMode(change);
 #endif
 
             GameRecordingBrain.eventDelegate.gameRecComplete += GameRecComplete;
@@ -54,26 +53,39 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
                 else return false;
             });
             Debug.Log("I am readyyyyyyyyyyyyy!");
+#if !UNITY_EDITOR
             Application.Quit();
+#else
+            EditorApplication.ExitPlaymode();
+#endif
         }
 
         private void ExitPlayMode(PlayModeStateChange change)
         {
-            if (change == PlayModeStateChange.ExitingPlayMode)
+            if (change == PlayModeStateChange.ExitingPlayMode && !userRequestedQuit)
             {
                 userRequestedQuit = true;
                 Debug.Log("You shall not pass!");
                 EditorApplication.isPlaying = true;
-                
-            };
+                return;
+            }
+
+            if (permissionsGranted == waitingPermissions && userRequestedQuit)
+            {
+                EditorApplication.isPlaying = false;
+            }
         }
 
-        
+
         private bool KillQuitProcess()
         {
-            userRequestedQuit = true;
-            Debug.Log("You shall not pass!");
-            return false;
+            if (!userRequestedQuit)
+            {
+                userRequestedQuit = true;
+                Debug.Log("You shall not pass!");
+                return false;
+            }
+            else return true;
         }
 
 
@@ -81,12 +93,33 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
         {
             // ToDo: pop-up with informations
             Debug.Log("Error on sending video Data");
+            permissionsGranted++;
+#if !UNITY_EDITOR
+            Application.wantsToQuit -= KillQuitProcess();
+#else
+            EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
+#endif
+
+            GameRecordingBrain.eventDelegate.gameRecComplete -= GameRecComplete;
+            GameRecordingBrain.eventDelegate.OnError -= OnError;
+#if !UNITY_EDITOR
             Application.Quit();
+#else
+            EditorApplication.ExitPlaymode();
+#endif
         }
 
         private void GameRecComplete(string finalfilepath)
         {
             Debug.Log("Permission granted");
+#if !UNITY_EDITOR
+            Application.wantsToQuit -= KillQuitProcess();
+#else
+            EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
+#endif
+
+            GameRecordingBrain.eventDelegate.gameRecComplete -= GameRecComplete;
+            GameRecordingBrain.eventDelegate.OnError -= OnError;
             permissionsGranted++;
         }
     }

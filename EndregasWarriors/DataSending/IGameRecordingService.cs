@@ -8,10 +8,10 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
     public interface IGameRecordingService
     {
         [Multipart]
-        [Headers("Content-Type: multipart/form-data")]
         [Post("/video")]
         UniRx.IObservable<string> PostPlayRun(
-            [Part] MultipartBody body
+            [Part] MultipartBody body,
+            [Header("Content-Type")] string contentType
         );
     }
 }

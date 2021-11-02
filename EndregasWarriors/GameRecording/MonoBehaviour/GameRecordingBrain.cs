@@ -1,5 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 using Retrofit;
 using Retrofit.HttpImpl;
@@ -19,6 +22,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     public static GameRecordingBrain _instance;
     private bool hasAwakenBefore;
+    private bool hasQuitBefore;
     private bool cameraRecorderReady;
     private bool audioRecorderReady;
 
@@ -39,7 +43,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
 
@@ -54,11 +58,12 @@ public class GameRecordingBrain : GameRecordingBrainBase
             garbageCollectionThread.IsBackground = true;
             garbageCollectionThread.Start();
 
-            RetrofitAdapter adapter = new RetrofitAdapter.Builder()
-                .SetEndpoint("http://" + PathConfig.serverAddress)
-                .SetClient(new UnityWebRequestImpl())
-                .Build();
-            _service = adapter.Create<IGameRecordingService>();
+            //
+            // RetrofitAdapter adapter = new RetrofitAdapter.Builder()
+            //     .SetEndpoint("http://" + PathConfig.serverAddress)
+            //     // .SetClient(new UnityWebRequestImpl())
+            //     .Build();
+            // _service = adapter.Create<IGameRecordingService>();
 
             hasAwakenBefore = true;
         }
@@ -108,49 +113,123 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     private bool WantsToQuit()
     {
-        status = CaptureSettings.StatusType.STOPPED;
-        while (!_encoder.FinishEncoding())
+        if (!hasQuitBefore)
         {
-            // Thread.Sleep(1000);
-        }
+            hasQuitBefore = true;
+            status = CaptureSettings.StatusType.STOPPED;
+            while (!_encoder.FinishEncoding())
+            {
+                // Thread.Sleep(1000);
+            }
 
-        CloseLibAPIs();
-        if (MixAudioWithVideo())
-        {
-            
-          
-            FileInfo fileInfo = new FileInfo(finalVideoFilePath);
-            MultipartBody multipartBody = new MultipartBody(fileInfo);
-            var ob = _service.PostPlayRun(multipartBody);
+            CloseLibAPIs();
+            if (MixAudioWithVideo())
+            {
+                // FileInfo fileInfo = new FileInfo(finalVideoFilePath);
+                // MultipartBody multipartBody = new MultipartBody(fileInfo);
+                //
+                // var ob = _service.PostPlayRun(multipartBody, "multipart/form-data");
+                //
+                // ob.SubscribeOn(Scheduler.MainThread)
+                //     .ObserveOn(Scheduler.ThreadPool)
+                //     .Subscribe(data =>
+                //     {
+                //         Debug.Log("Response:  " + data);
+                //
+                //         eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
+                //     }, error =>
+                //     {
+                //         Debug.Log("Response: " + error);
+                //         eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_NOT_SENT);
+                //     });
 
+                StartCoroutine(PostVideo());
+            }
+            else eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_AUDIO_MERGE_TIMEOUT);
 
-            Debug.Log("I am here dude!");
-            ob.SubscribeOn(Scheduler.ThreadPool)
-                .ObserveOn(Scheduler.MainThread)
-                .Subscribe(data =>
-                {
-                    Debug.Log("Response:  " + data);
-
-                    eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
-                }, error =>
-                {
-                    Debug.Log("Response: " + error);
-                    eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_NOT_SENT);
-                });
-        }
-        else eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_AUDIO_MERGE_TIMEOUT);
-
-        CleanLibAPIs();
-        garbageCollectionThread.Abort();
-        AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
-        VideoCaptureTool.eventDelegate.onReady -= SetComponentReady;
+            CleanLibAPIs();
+            garbageCollectionThread.Abort();
+            AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
+            VideoCaptureTool.eventDelegate.onReady -= SetComponentReady;
 #if !UNITY_EDITOR
         Application.wantsToQuit -= WantsToQuit;
 #else
-        EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
+            EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
 #endif
-        status = CaptureSettings.StatusType.FINISH;
+            status = CaptureSettings.StatusType.FINISH;
+        }
+
         return true;
+    }
+
+    private IEnumerator PostVideo()
+    {
+        // finalVideoFilePath = "C:/Users/spiri/OneDrive/Documente/RockVR/Video/2021-10-31-11-23-27-ZNZBY.mp4";
+        
+        // byte[] boundary = UnityWebRequest.GenerateBoundary();
+        // List<IMultipartFormSection> file = new List<IMultipartFormSection>();
+        // file.Add(new MultipartFormFileSection("file", File.ReadAllBytes(finalVideoFilePath)));
+        //
+        // var request = UnityWebRequest.Post(PathConfig.serverAddress + "/video?Game=versioned&Build=1", file, boundary);
+        //
+        // //
+        // // byte[] formSections = UnityWebRequest.SerializeFormSections(file, boundary);
+        // // byte[] terminate = Encoding.UTF8.GetBytes(String.Concat("\r\n--", Encoding.UTF8.GetString(boundary), "--"));
+        // //
+        // // byte[] body = new byte[formSections.Length + terminate.Length];
+        // // Buffer.BlockCopy(formSections, 0, body, 0, formSections.Length);
+        // // Buffer.BlockCopy(terminate, 0, body, formSections.Length, terminate.Length);
+        //
+        // string contentType = String.Concat("multipart/form-data; boundary=", Encoding.UTF8.GetString(boundary));
+        // // string contentType = "application/octet-stream";
+        // // string contentType = "multipart/form-data";
+        //
+        //
+        // // UnityWebRequest request = new UnityWebRequest(PathConfig.serverAddress + "/video?Game=versioned&Build=1", "POST");
+        // // UploadHandler uploader = new UploadHandlerFile(finalVideoFilePath);
+        // request.uploadHandler.contentType = contentType;
+        // // request.uploadHandler = uploader;
+        // request.downloadHandler = new DownloadHandlerBuffer(); 
+        //
+        // yield return request.SendWebRequest();
+        //
+        // if (request.isNetworkError || request.isHttpError)
+        // {
+        //     Debug.Log("Response: " + request.error);
+        //     Debug.Log("Response: " + request.url);
+        //     Debug.Log("Response: " + request.uri);
+        //     Debug.Log("Response: " + request.downloadHandler.text);
+        //
+        //     eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_NOT_SENT);
+        // }
+        // else
+        // {
+        //     Debug.Log("Response:  " + request.downloadHandler.text);
+        //     eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
+        // }
+
+        WWWForm form = new WWWForm();
+        form.AddBinaryData("file", File.ReadAllBytes(finalVideoFilePath), "PlayRun2Identifier.mp4");
+        
+        UnityWebRequest request = UnityWebRequest.Post(PathConfig.serverAddress + "/video?Game=versioned&Build=1", form);
+        yield return request.SendWebRequest();
+        
+        if (request.isNetworkError || request.isHttpError)
+        {
+            Debug.Log("Response: " + request.error);
+            Debug.Log("Response: " + request.url);
+            Debug.Log("Response: " + request.uri);
+            Debug.Log("Response: " + request.downloadHandler.text);
+
+            eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_NOT_SENT);
+        }
+        else
+        {
+            Debug.Log("Response:  " + request.downloadHandler.text);
+            eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
+        }
+        
+        File.Delete(finalVideoFilePath);
     }
 
     void GarbageCollectionThreadFunction()

@@ -11,7 +11,7 @@ namespace UnityUXTesting.EndregasWarriors.Common
             Environment.SpecialFolder.MyDocuments);
         public static string saveFolder="";
         public static string lastVideoFile = "";
-        public static string serverAddress = "localhost:8080";
+        public static string serverAddress = "http://localhost:8080";
         
         public static string SaveFolder
         {
