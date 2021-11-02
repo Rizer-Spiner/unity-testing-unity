@@ -8,5 +8,4 @@ public class PathConfigScriptable : ScriptableObject
     public string gameName = "TestGame";
     public string buildID = "BuildNr1";
     
-
 }
