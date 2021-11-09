@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef4ec9899c4d5bc4e9debe01e513eafc, type: 3}
   m_Name: PathConfig
   m_EditorClassIdentifier: 
-  serverAddress: 0-0-0
-  gameName: 0-0-0
-  buildID: 0-0-0
+  serverAddress: http://localhost:8080
+  gameName: ssss
+  currentBuildID: sssasa1

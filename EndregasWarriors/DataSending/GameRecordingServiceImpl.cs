@@ -32,7 +32,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             form.AddBinaryData("file", File.ReadAllBytes(filePath), fileName);
 
             string url = String.Format("{0}/video?Game={1}&Build={2}", _config.serverAddress, _config.gameName,
-                _config.buildID);
+                _config.currentBuildID);
             UnityWebRequest request = UnityWebRequest.Post(url, form);
 
             yield return request.SendWebRequest();

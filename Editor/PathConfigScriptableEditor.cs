@@ -1,17 +1,17 @@
-﻿using UnityEditor;
+﻿using System.Collections;
+using UnityEditor;
 using UnityEngine;
 
 namespace UnityUXTesting.Editor
 {
-    [CustomEditor(typeof(PathConfigScriptable))]
+    // [CustomEditor(typeof(PathConfigScriptable))]
     public class PathConfigScriptableEditor : UnityEditor.Editor
     {
+       
         public override void OnInspectorGUI()
         {
-            GUILayout.Space(20);
-            
-            EditorGUILayout.LabelField("Configure your UX testing environment");
-            base.OnInspectorGUI();
+            EditorGUILayout.LabelField("To configure the configuration go under Tools->EndregasUX->Configuration");
+
         }
     }
 }

@@ -1,11 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityUXTesting.EndregasWarriors.Common;
 
-// [CreateAssetMenu(menuName = "PathConfigScriptable")]
+[CreateAssetMenu(menuName = "PathConfigScriptable")]
 [System.Serializable]
 public class PathConfigScriptable : ScriptableObject
 {
-    public string serverAddress = "http://localhost:8080";
-    public string gameName = "TestGame";
-    public string buildID = "BuildNr1";
-    
+    public string serverAddress = null;
+    public string gameName = null;
+    public string currentBuildID = null;
+
+    public Dictionary<string, string> ServerPackageDictionary = new Dictionary<string, string>();
+
 }
