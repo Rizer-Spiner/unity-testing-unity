@@ -95,6 +95,7 @@ namespace UnityUXTesting.Editor
 
         private void AddGamePopView()
         {
+            GUILayout.Space(20);
             newGameName = EditorGUILayout.TextField("Game name", newGameName);
             newBuildName = EditorGUILayout.TextField("Build name:", newBuildName);
 
@@ -107,9 +108,10 @@ namespace UnityUXTesting.Editor
 
         private void AddNewBuildPopView()
         {
+            GUILayout.Space(20);
             newBuildName = EditorGUILayout.TextField("Build name:", newBuildName);
 
-            if (GUILayout.Button("Add game"))
+            if (GUILayout.Button("Add build"))
             {
                 addNewGameButtonPressed = false;
                 this.StartCoroutine(AddNewBuild(newBuildName));
@@ -121,7 +123,7 @@ namespace UnityUXTesting.Editor
             subject.serverAddress = null;
             subject.gameName = null;
             subject.currentBuildID = null;
-            subject.ServerPackageDictionary = new Dictionary<string, string>();
+           
 
 
             testAddress = "";
@@ -131,6 +133,8 @@ namespace UnityUXTesting.Editor
 
             addNewBuildButtonPressed = false;
             addNewGameButtonPressed = false;
+            
+            subject.ServerPackageDictionary = new Dictionary<string, string>();
 
             EditorUtility.SetDirty(target: subject);
         }
@@ -225,6 +229,7 @@ namespace UnityUXTesting.Editor
 
             newGameName = "";
             newBuildName = "";
+            addNewGameButtonPressed = false;
             
             EditorUtility.SetDirty(target: subject);
         }
@@ -255,12 +260,18 @@ namespace UnityUXTesting.Editor
             {
                 subject.ServerPackageDictionary.Remove(subject.gameName);
                 subject.ServerPackageDictionary.Add(subject.gameName, newBuildID);
+                subject.currentBuildID = newBuildID;
             }
+            
+            subject.ServerPackageDictionary.Remove(subject.gameName);
+            subject.ServerPackageDictionary.Add(subject.gameName, newBuildID);
+            subject.currentBuildID = newBuildID;
             
             newGameName = "";
             newBuildName = "";
+            addNewBuildButtonPressed = false;
             
-            // subject.currentBuildID = newBuildID;
+            
             EditorUtility.SetDirty(target: subject);
         }
 
@@ -290,12 +301,12 @@ namespace UnityUXTesting.Editor
                 EditorUtility.SetDirty(subject);
             }
 
-            // subject.ServerPackageDictionary = new Dictionary<string, string>();
+            subject.ServerPackageDictionary = new Dictionary<string, string>();
             // subject.ServerPackageDictionary.Add("Test1", "BuildT1Nr1");
             // subject.ServerPackageDictionary.Add("Test2", "BuildT2Nr1");
             // subject.ServerPackageDictionary.Add("Test3", "BuildT3Nr1");
 
-            // subject.serverAddress = address;
+            subject.serverAddress = address;
             EditorUtility.SetDirty(target: subject);
         }
 
