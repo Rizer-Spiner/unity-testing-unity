@@ -6,7 +6,6 @@ using EditorCoroutines;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityUXTesting.EndregasWarriors.Common;
 
 namespace UnityUXTesting.Editor
 {
@@ -17,6 +16,9 @@ namespace UnityUXTesting.Editor
         public string newGameName = "";
         private string newBuildName = "";
         public static int GameNameIndex { get; set; }
+
+        public Boolean addNewGameButtonPressed = false;
+        public Boolean addNewBuildButtonPressed = false;
 
         [MenuItem("Tools/EndregasUX/Configuration")]
         private static void ShowWindow()
@@ -71,17 +73,47 @@ namespace UnityUXTesting.Editor
 
             if (GUILayout.Button("Add new game registry"))
             {
-                AddNewGamePopView();
+                addNewGameButtonPressed = true;
             }
 
             if (GUILayout.Button("Add new build"))
+            {
+                addNewBuildButtonPressed = true;
+            }
+
+            if (addNewGameButtonPressed)
+            {
+                AddGamePopView();
+            }
+
+
+            if (addNewBuildButtonPressed)
             {
                 AddNewBuildPopView();
             }
         }
 
+        private void AddGamePopView()
+        {
+            newGameName = EditorGUILayout.TextField("Game name", newGameName);
+            newBuildName = EditorGUILayout.TextField("Build name:", newBuildName);
+
+            if (GUILayout.Button("Add game"))
+            {
+                addNewBuildButtonPressed = false;
+                this.StartCoroutine(AddGameName(newGameName, newBuildName));
+            }
+        }
+
         private void AddNewBuildPopView()
         {
+            newBuildName = EditorGUILayout.TextField("Build name:", newBuildName);
+
+            if (GUILayout.Button("Add game"))
+            {
+                addNewGameButtonPressed = false;
+                this.StartCoroutine(AddNewBuild(newBuildName));
+            }
         }
 
         private void Disconnect()
@@ -95,6 +127,10 @@ namespace UnityUXTesting.Editor
             testAddress = "";
             newGameName = "";
             newBuildName = "";
+            GameNameIndex = 0;
+
+            addNewBuildButtonPressed = false;
+            addNewGameButtonPressed = false;
 
             EditorUtility.SetDirty(target: subject);
         }
@@ -103,12 +139,7 @@ namespace UnityUXTesting.Editor
         {
             this.StartCoroutine(Connect(subject.serverAddress));
         }
-
-        private void AddNewGamePopView()
-        {
-            AddGameView();
-        }
-
+        
         private void AddGameView()
         {
             GUILayout.Space(20);
@@ -122,7 +153,10 @@ namespace UnityUXTesting.Editor
             newGameName = EditorGUILayout.TextField("Game name", newGameName);
             newBuildName = EditorGUILayout.TextField("Build name:", newBuildName);
 
-            if (GUILayout.Button("Add game")) this.StartCoroutine(AddGameName(newGameName, newBuildName));
+            if (GUILayout.Button("Add game"))
+            {
+                this.StartCoroutine(AddGameName(newGameName, newBuildName));
+            }
         }
 
         private void ServerConfigurationView()
@@ -183,18 +217,22 @@ namespace UnityUXTesting.Editor
                 subject.ServerPackageDictionary.Add(gameName, buildName);
                 subject.gameName = gameName;
                 subject.currentBuildID = buildName;
-                EditorUtility.SetDirty(target: subject);
             }
 
-            // subject.ServerPackageDictionary.Add(gameName, buildName);
-            // subject.gameName = gameName;
-            // subject.currentBuildID = buildName;
-            // EditorUtility.SetDirty(target: subject);
+            subject.ServerPackageDictionary.Add(gameName, buildName);
+            subject.gameName = gameName;
+            subject.currentBuildID = buildName;
+
+            newGameName = "";
+            newBuildName = "";
+            
+            EditorUtility.SetDirty(target: subject);
         }
 
         private IEnumerator AddNewBuild(string newBuildID)
         {
             WWWForm form = new WWWForm();
+            form.AddField("gameName", subject.gameName);
             form.AddField("buildID", newBuildID);
 
             string url = String.Format("{0}/addNewBuild", subject.serverAddress);
@@ -217,9 +255,12 @@ namespace UnityUXTesting.Editor
             {
                 subject.ServerPackageDictionary.Remove(subject.gameName);
                 subject.ServerPackageDictionary.Add(subject.gameName, newBuildID);
-                EditorUtility.SetDirty(target: subject);
             }
-
+            
+            newGameName = "";
+            newBuildName = "";
+            
+            // subject.currentBuildID = newBuildID;
             EditorUtility.SetDirty(target: subject);
         }
 
@@ -259,97 +300,5 @@ namespace UnityUXTesting.Editor
         }
 
         #endregion HttpMethods
-
-
-        // private void OnGUI()
-        // {
-        //     GUILayout.Space(20);
-        //
-        //     EditorGUILayout.LabelField("Configure your UX testing environment");
-        //     GUILayout.Space(10);
-        //     Debug.Log("ServerPackage 1" + subject.serverPackage.ToString());
-        //
-        //     if (subject.serverAddress.Equals(START_ADDRESS)) ConfigureServer();
-        //     else
-        //     {
-        //         if (!checkForUpdates)
-        //             CheckForUpdates();
-        //         ContinueToolConfiguration();
-        //     }
-        // }
-        //
-        // private void CheckForUpdates()
-        // {
-        //     Debug.Log("ServerPackage 2" + subject.serverPackage.ToString());
-        //     checkForUpdates = true;
-        //     this.StartCoroutine(Connect(subject.serverAddress));
-        // }
-        //
-        // private void ConfigureServer()
-        // {
-        //     subject.gameName = "";
-        //     subject.buildID = "";
-        //     subject.serverPackage = new ServerPackage()
-        //     {
-        //         GameNames = new List<string>(),
-        //         BuildIDs = new List<string>()
-        //     };
-        //
-        //     EditorGUILayout.LabelField("Add server web address:");
-        //     testAddress = EditorGUILayout.TextField("Server address", testAddress);
-        //
-        // if (GUILayout.Button("Test server connection"))
-        // {
-        //     if (!testAddress.Equals(START_ADDRESS) &&
-        //         (testAddress.StartsWith("http://") || testAddress.StartsWith("https://")))
-        //     {
-        //         this.StartCoroutine(Connect(testAddress));
-        //     }
-        //     else
-        //     {
-        //         Debug.LogWarning("EndregasUX::Configuration: Please insert a valid web address");
-        //     }
-        // }
-        // }
-        //
-        // private void ContinueToolConfiguration()
-        // {
-        //     subject.serverAddress = EditorGUILayout.TextField("Server web address", subject.serverAddress);
-        //     GUILayout.Space(5);
-        //     if (subject.serverPackage.GameNames.Count > 0)
-        //     {
-        //         GameNameIndex =
-        //             EditorGUILayout.Popup("Game name", GameNameIndex, subject.serverPackage.GameNames.ToArray());
-        //         subject.gameName = subject.serverPackage.GameNames[GameNameIndex];
-        //     }
-        //     else
-        //     {
-        //         string gameName = "";
-        //         gameName = EditorGUILayout.TextField("Add game name", gameName);
-        //
-        //         if (!gameName.Equals("") && GUILayout.Button("Add game"))
-        //         {
-        //             this.StartCoroutine(AddGameName(gameName));
-        //         }
-        //     }
-        //
-        //     GUILayout.Space(5);
-        //     if (subject.serverPackage.BuildIDs.Count > 0)
-        //     {
-        //         BuildIDIndex = EditorGUILayout.Popup("BuildID", BuildIDIndex, subject.serverPackage.BuildIDs.ToArray());
-        //         subject.buildID = subject.serverPackage.BuildIDs[BuildIDIndex];
-        //     }
-        //     else
-        //     {
-        //     }
-        //
-        //     EditorUtility.SetDirty(target: subject);
-        // }
-        //
-        //
-        //
-        //
-        //
-        //
     }
 }
