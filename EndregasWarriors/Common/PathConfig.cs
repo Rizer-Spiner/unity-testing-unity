@@ -11,9 +11,7 @@ namespace UnityUXTesting.EndregasWarriors.Common
             Environment.SpecialFolder.MyDocuments);
         public static string saveFolder="";
         public static string lastVideoFile = "";
-        /// <summary>
-        /// The video folder, save recorded video.
-        /// </summary>
+
         public static string SaveFolder
         {
             get
@@ -70,5 +68,7 @@ namespace UnityUXTesting.EndregasWarriors.Common
 #endif
             }
         }
+        
+        
     }
 }

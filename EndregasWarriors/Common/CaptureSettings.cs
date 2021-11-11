@@ -16,6 +16,7 @@
             CAMERA_AUDIO_CAPTURE_NOT_FOUND = -1,
             FFMPEG_NOT_FOUND = -2,
             VIDEO_AUDIO_MERGE_TIMEOUT = -3,
+            VIDEO_NOT_SENT= -4,
         }
 
         public enum FrameSizeType

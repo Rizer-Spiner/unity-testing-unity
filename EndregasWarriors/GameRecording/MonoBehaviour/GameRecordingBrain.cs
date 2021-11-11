@@ -1,28 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.IO;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityUXTesting.EndregasWarriors.Common;
+using UnityUXTesting.EndregasWarriors.DataSending;
 using UnityUXTesting.EndregasWarriors.GameRecording;
 
 
 public class GameRecordingBrain : GameRecordingBrainBase
 {
     public CaptureSettings.StatusType status;
+    public PathConfigScriptable configuration;
 
     public static GameRecordingBrain _instance;
     private bool hasAwakenBefore;
+    private bool hasQuitBefore;
     private bool cameraRecorderReady;
     private bool audioRecorderReady;
 
     private Thread garbageCollectionThread;
     private bool areComponentsInitialized;
-    
-    public static EventDelegate eventDelegate = new EventDelegate();
-    
-    
-    
+    private IGameRecordingService _service;
+
+
     protected override void Awake()
     {
         status = CaptureSettings.StatusType.NOT_START;
@@ -33,21 +37,23 @@ public class GameRecordingBrain : GameRecordingBrainBase
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(this);
             return;
         }
-
-        garbageCollectionThread = new Thread(GarbageCollectionThreadFunction);
-        garbageCollectionThread.Priority = System.Threading.ThreadPriority.Lowest;
-        garbageCollectionThread.IsBackground = true;
-        garbageCollectionThread.Start();
 
         if (!hasAwakenBefore)
         {
             base.Awake();
             VideoCaptureTool.eventDelegate.onReady += SetComponentReady;
             AudioCaptureTool.eventDelegate.onReady += SetComponentReady;
+
+            garbageCollectionThread = new Thread(GarbageCollectionThreadFunction);
+            garbageCollectionThread.Priority = System.Threading.ThreadPriority.Lowest;
+            garbageCollectionThread.IsBackground = true;
+            garbageCollectionThread.Start();
             hasAwakenBefore = true;
+
+            _service = new GameRecordingServiceImpl(configuration);
         }
     }
 
@@ -95,38 +101,42 @@ public class GameRecordingBrain : GameRecordingBrainBase
 
     private bool WantsToQuit()
     {
-        status = CaptureSettings.StatusType.STOPPED;
-        while (!_encoder.FinishEncoding())
+        if (!hasQuitBefore)
         {
-            // Thread.Sleep(1000);
-            
+            hasQuitBefore = true;
+            status = CaptureSettings.StatusType.STOPPED;
+            while (!_encoder.FinishEncoding())
+            {
+                // Thread.Sleep(1000);
+            }
+
+            CloseLibAPIs();
+            if (MixAudioWithVideo())
+            {
+                StartCoroutine(PostVideo());
+            }
+            else eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_AUDIO_MERGE_TIMEOUT);
+
+            CleanLibAPIs();
+            garbageCollectionThread.Abort();
+            AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
+            VideoCaptureTool.eventDelegate.onReady -= SetComponentReady;
+#if !UNITY_EDITOR
+            Application.wantsToQuit -= WantsToQuit;
+#else
+            EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
+#endif
+            status = CaptureSettings.StatusType.FINISH;
         }
 
-
-        CloseLibAPIs();
-        if(MixAudioWithVideo())
-            eventDelegate.gameRecComplete?.Invoke(finalVideoFilePath);
-        else eventDelegate.OnError?.Invoke(CaptureSettings.ErrorCodeType.VIDEO_AUDIO_MERGE_TIMEOUT);
-        
-        CleanLibAPIs();
-        garbageCollectionThread.Abort();
-        AudioCaptureTool.eventDelegate.onReady -= SetComponentReady;
-        VideoCaptureTool.eventDelegate.onReady -= SetComponentReady;
-#if !UNITY_EDITOR
-        Application.wantsToQuit -= WantsToQuit;
-#else
-        EditorApplication.playModeStateChanged -= change => ExitPlayMode(change);
-#endif
-        status = CaptureSettings.StatusType.FINISH;
-     
         return true;
     }
 
-    private IEnumerator Wait()
+    private IEnumerator PostVideo()
     {
-        yield return new WaitForSeconds(1);
+        yield return _service.PostPlayThrough(finalVideoFilePath);
+        File.Delete(finalVideoFilePath);
     }
-
 
     void GarbageCollectionThreadFunction()
     {
