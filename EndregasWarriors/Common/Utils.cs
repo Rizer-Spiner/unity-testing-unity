@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace UnityUXTesting.EndregasWarriors.Common
@@ -56,6 +57,29 @@ namespace UnityUXTesting.EndregasWarriors.Common
                 public static bool CheckPowerOfTwo(int input)
                 {
                     return (input & (input - 1)) == 0;
+                }
+            }
+
+            public class JSONUtils
+            {
+                public static Dictionary<string, string> convertToDictionary(string json)
+                {
+                    Dictionary<string, string> dict = new Dictionary<string, string>();
+                    
+                    json = json.Remove(json.Length - 1).Remove(0, 1);
+                    
+                    string[] pairs = json.Split(',');
+
+                    foreach (var pair in pairs)
+                    {
+                        string[] keyValue = pair.Split(':');
+                        string key = keyValue[0].Remove(keyValue[0].Length - 1).Remove(0, 1);
+                        string value = keyValue[1].Remove(keyValue[1].Length - 1).Remove(0, 1);
+                        
+                        dict.Add(key, value);
+
+                    }
+                    return dict;
                 }
             }
     }

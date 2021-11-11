@@ -6,6 +6,7 @@ using EditorCoroutines;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityUXTesting.EndregasWarriors.Common;
 
 namespace UnityUXTesting.Editor
 {
@@ -123,7 +124,6 @@ namespace UnityUXTesting.Editor
             subject.serverAddress = null;
             subject.gameName = null;
             subject.currentBuildID = null;
-           
 
 
             testAddress = "";
@@ -133,7 +133,7 @@ namespace UnityUXTesting.Editor
 
             addNewBuildButtonPressed = false;
             addNewGameButtonPressed = false;
-            
+
             subject.ServerPackageDictionary = new Dictionary<string, string>();
 
             EditorUtility.SetDirty(target: subject);
@@ -143,7 +143,7 @@ namespace UnityUXTesting.Editor
         {
             this.StartCoroutine(Connect(subject.serverAddress));
         }
-        
+
         private void AddGameView()
         {
             GUILayout.Space(20);
@@ -197,10 +197,9 @@ namespace UnityUXTesting.Editor
         private IEnumerator AddGameName(string gameName, string buildName)
         {
             WWWForm form = new WWWForm();
-            form.AddField("gameName", gameName);
-            form.AddField("buildName", buildName);
+            form.AddField("game", gameName);
 
-            string url = String.Format("{0}/addGame", subject.serverAddress);
+            string url = String.Format("{0}/game", subject.serverAddress);
             UnityWebRequest request = UnityWebRequest.Post(url, form);
 
             yield return request.SendWebRequest();
@@ -218,39 +217,58 @@ namespace UnityUXTesting.Editor
             }
             else
             {
-                subject.ServerPackageDictionary.Add(gameName, buildName);
-                subject.gameName = gameName;
-                subject.currentBuildID = buildName;
-            }
+                WWWForm formBuild = new WWWForm();
+                formBuild.AddField("game", gameName);
+                formBuild.AddField("build", buildName);
 
-            subject.ServerPackageDictionary.Add(gameName, buildName);
-            subject.gameName = gameName;
-            subject.currentBuildID = buildName;
+                string urlBuild = String.Format("{0}/game/build", subject.serverAddress);
+                UnityWebRequest requestBuild = UnityWebRequest.Post(urlBuild, formBuild);
+
+                yield return requestBuild.SendWebRequest();
+
+                if (requestBuild.isNetworkError || requestBuild.isHttpError)
+                {
+                    String response = String.Format("{0} {1} {2} {3} {4}",
+                        "EndregasUX::Configuration: Could not add new build option! ",
+                        "\n",
+                        requestBuild.downloadHandler.text,
+                        "\n",
+                        "Please try again!"
+                    );
+                    Debug.LogError(response);
+                }
+                else
+                {
+                    subject.ServerPackageDictionary.Add(gameName, buildName);
+                    subject.gameName = gameName;
+                    subject.currentBuildID = buildName;
+                }
+            }
 
             newGameName = "";
             newBuildName = "";
             addNewGameButtonPressed = false;
-            
+
             EditorUtility.SetDirty(target: subject);
         }
 
         private IEnumerator AddNewBuild(string newBuildID)
         {
-            WWWForm form = new WWWForm();
-            form.AddField("gameName", subject.gameName);
-            form.AddField("buildID", newBuildID);
+            WWWForm formBuild = new WWWForm();
+            formBuild.AddField("game", subject.gameName);
+            formBuild.AddField("build", newBuildID);
 
-            string url = String.Format("{0}/addNewBuild", subject.serverAddress);
-            UnityWebRequest request = UnityWebRequest.Post(url, form);
+            string urlBuild = String.Format("{0}/game/build", subject.serverAddress);
+            UnityWebRequest requestBuild = UnityWebRequest.Post(urlBuild, formBuild);
 
-            yield return request.SendWebRequest();
+            yield return requestBuild.SendWebRequest();
 
-            if (request.isNetworkError || request.isHttpError)
+            if (requestBuild.isNetworkError || requestBuild.isHttpError)
             {
                 String response = String.Format("{0} {1} {2} {3} {4}",
-                    "EndregasUX::Configuration: Could not add new game option! ",
+                    "EndregasUX::Configuration: Could not add new build option! ",
                     "\n",
-                    request.downloadHandler.text,
+                    requestBuild.downloadHandler.text,
                     "\n",
                     "Please try again!"
                 );
@@ -262,15 +280,10 @@ namespace UnityUXTesting.Editor
                 subject.ServerPackageDictionary.Add(subject.gameName, newBuildID);
                 subject.currentBuildID = newBuildID;
             }
-            
-            subject.ServerPackageDictionary.Remove(subject.gameName);
-            subject.ServerPackageDictionary.Add(subject.gameName, newBuildID);
-            subject.currentBuildID = newBuildID;
-            
+      
             newGameName = "";
             newBuildName = "";
             addNewBuildButtonPressed = false;
-            
             
             EditorUtility.SetDirty(target: subject);
         }
@@ -295,18 +308,9 @@ namespace UnityUXTesting.Editor
             }
             else
             {
-                subject.ServerPackageDictionary =
-                    JsonUtility.FromJson<Dictionary<string, string>>(request.downloadHandler.text);
+                subject.ServerPackageDictionary = Utils.JSONUtils.convertToDictionary(request.downloadHandler.text);
                 subject.serverAddress = address;
-                EditorUtility.SetDirty(subject);
             }
-
-            subject.ServerPackageDictionary = new Dictionary<string, string>();
-            // subject.ServerPackageDictionary.Add("Test1", "BuildT1Nr1");
-            // subject.ServerPackageDictionary.Add("Test2", "BuildT2Nr1");
-            // subject.ServerPackageDictionary.Add("Test3", "BuildT3Nr1");
-
-            subject.serverAddress = address;
             EditorUtility.SetDirty(target: subject);
         }
 
