@@ -15,3 +15,13 @@ MonoBehaviour:
   serverAddress: http://localhost:8080
   gameName: dddd
   currentBuildID: sadan2
+  keys:
+  - dddd
+  - ddd
+  - yyy
+  - hello then
+  values:
+  - sadan2
+  - sss
+  - ttttt
+  - aaaa1
