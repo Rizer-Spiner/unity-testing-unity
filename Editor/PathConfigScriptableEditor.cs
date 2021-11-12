@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UnityUXTesting.Editor
 {
-    // [CustomEditor(typeof(PathConfigScriptable))]
+    [CustomEditor(typeof(PathConfigScriptable))]
     public class PathConfigScriptableEditor : UnityEditor.Editor
     {
        
