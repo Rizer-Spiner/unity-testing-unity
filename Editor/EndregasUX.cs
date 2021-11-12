@@ -37,6 +37,19 @@ namespace UnityUXTesting.Editor
             Repaint();
         }
 
+        private void OnEnable()
+        {
+            if (subject.keys.Length > 0 && subject.values.Length > 0 && subject.keys.Length == subject.values.Length)
+            {
+                subject.ServerPackageDictionary = new Dictionary<string, string>();
+
+                for (int i = 0; i < subject.keys.Length; i++)
+                {
+                    subject.ServerPackageDictionary.Add(subject.keys[i], subject.values[i]);
+                }
+            }
+        }
+
         private void OnGUI()
         {
             if (subject.serverAddress == null || subject.serverAddress.Equals(""))
@@ -309,6 +322,8 @@ namespace UnityUXTesting.Editor
             else
             {
                 subject.ServerPackageDictionary = Utils.JSONUtils.convertToDictionary(request.downloadHandler.text);
+                subject.keys = subject.ServerPackageDictionary.Keys.ToArray();
+                subject.values = subject.ServerPackageDictionary.Values.ToArray();
                 subject.serverAddress = address;
             }
             EditorUtility.SetDirty(target: subject);
