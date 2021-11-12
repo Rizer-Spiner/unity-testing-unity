@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using UnityEngine.Networking;
 
 namespace EditorCoroutines
 {
@@ -19,9 +20,9 @@ namespace EditorCoroutines
 				this.StartCoroutine(Example());
 			}
 
-			if (GUILayout.Button("Start WWW"))
+			if (GUILayout.Button("Start UnityWebRequest"))
 			{
-				this.StartCoroutine(ExampleWWW());
+				this.StartCoroutine(ExampleUnityWebRequest());
 			}
 
 			if (GUILayout.Button("Start Nested"))
@@ -53,13 +54,13 @@ namespace EditorCoroutines
 			}
 		}
 
-		IEnumerator ExampleWWW()
+		IEnumerator ExampleUnityWebRequest()
 		{
 			while (true)
 			{
-				var www = new WWW("https://unity3d.com/");
+				var www = new UnityWebRequest("https://unity3d.com/");
 				yield return www;
-				Debug.Log("Hello EditorCoroutine!" + www.text);
+				Debug.Log("Hello EditorCoroutine!" + www.downloadHandler.text);
 				yield return new WaitForSeconds(2f);
 			}
 		}

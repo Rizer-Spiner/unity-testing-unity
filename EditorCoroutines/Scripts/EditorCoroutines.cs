@@ -4,6 +4,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
+using UnityEngine.Networking;
 
 namespace EditorCoroutines
 {
@@ -75,9 +76,9 @@ namespace EditorCoroutines
 			}
 		}
 
-		struct YieldWWW : ICoroutineYield
+		struct YieldUnityWebRequest : ICoroutineYield
 		{
-			public WWW Www;
+			public UnityWebRequest Www;
 
 			public bool IsDone(float deltaTime)
 			{
@@ -354,9 +355,9 @@ namespace EditorCoroutines
 				float seconds = float.Parse(GetInstanceField(typeof(WaitForSeconds), current, "m_Seconds").ToString());
 				coroutine.currentYield = new YieldWaitForSeconds() {timeLeft = (float) seconds};
 			}
-			else if (current is WWW)
+			else if (current is UnityWebRequest)
 			{
-				coroutine.currentYield = new YieldWWW {Www = (WWW) current};
+				coroutine.currentYield = new YieldUnityWebRequest {Www = (UnityWebRequest) current};
 			}
 			else if (current is WaitForFixedUpdate)
 			{

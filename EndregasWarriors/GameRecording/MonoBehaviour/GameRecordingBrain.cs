@@ -13,6 +13,7 @@ using UnityUXTesting.EndregasWarriors.GameRecording;
 
 public class GameRecordingBrain : GameRecordingBrainBase
 {
+    [NonSerialized]
     public CaptureSettings.StatusType status;
     public PathConfigScriptable configuration;
 
