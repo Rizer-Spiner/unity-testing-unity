@@ -25,7 +25,7 @@ namespace UnityUXTesting.Editor
         private static void ShowWindow()
         {
             subject = (PathConfigScriptable) AssetDatabase.LoadAssetAtPath(
-                "Assets/UnityUXTesting/EndregasWarriors/Common/PathConfig.asset",
+                "Assets/UnityUXTesting/EndregasWarriors/Common/Settings/PathConfig.asset",
                 typeof(PathConfigScriptable));
 
             EndregasUX window = (EndregasUX) GetWindow(typeof(EndregasUX));
@@ -321,7 +321,7 @@ namespace UnityUXTesting.Editor
             }
             else
             {
-                subject.ServerPackageDictionary = Utils.JSONUtils.convertToDictionary(request.downloadHandler.text);
+                subject.ServerPackageDictionary = Utils.JSONUtils.ConvertToDictionary(request.downloadHandler.text);
                 subject.keys = subject.ServerPackageDictionary.Keys.ToArray();
                 subject.values = subject.ServerPackageDictionary.Values.ToArray();
                 subject.serverAddress = address;
