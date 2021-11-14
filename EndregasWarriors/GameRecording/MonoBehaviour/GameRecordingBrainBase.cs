@@ -30,7 +30,7 @@ public class GameRecordingBrainBase : UXTool
     public EncodeQualityType encodeQuality = EncodeQualityType.Medium;
     public TargetFramerateType _targetFramerate = TargetFramerateType._30;
 
-    public EventDelegate eventDelegate;
+
 
 
 
@@ -134,6 +134,7 @@ public class GameRecordingBrainBase : UXTool
         
         videoFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5)); 
         audioFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetWavFileName(Utils.StringUtils.GetRandomString(5));
+        finalVideoFilePath = PathConfig.saveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5));
         
 
         videoLibAPI = VideoCaptureLib_Get(
@@ -169,8 +170,6 @@ public class GameRecordingBrainBase : UXTool
 
     public bool MixAudioWithVideo()
     {
-        finalVideoFilePath = PathConfig.saveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5));
-
         AudioVideoMixer mixer = new AudioVideoMixer(videoFilePath, audioFilePath, finalVideoFilePath, bitrate);
         return mixer.Muxing();
     }

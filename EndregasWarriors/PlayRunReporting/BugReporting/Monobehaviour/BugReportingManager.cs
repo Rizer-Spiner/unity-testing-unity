@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityUXTesting.EndregasWarriors.Common;
@@ -11,9 +12,26 @@ namespace UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour
         public TMP_InputField name;
         public TMP_InputField description;
         public TMP_InputField numberOfSec;
-
-
+        
+        public static BugReportingManager _instance;
+        
+        [NonSerialized]
         public List<Bug> bugs;
+
+        protected override void Awake()
+        {
+            DontDestroyOnLoad(this);
+            if (_instance == null)
+            {
+                _instance = this;
+            }
+            else
+            {
+                Destroy(this);
+                return;
+            }
+            base.Awake();
+        }
 
 
         public void AddBug()
@@ -30,8 +48,6 @@ namespace UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour
             description.text = "";
             name.text = "";
             numberOfSec.text = "";
-            
-            Debug.Log(newBug.timeVideoReference.start);
         }
         
     }

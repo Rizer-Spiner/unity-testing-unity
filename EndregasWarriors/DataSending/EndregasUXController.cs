@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEditor;
 using UnityEngine;
 using UnityUXTesting.EndregasWarriors.Common;
+using UnityUXTesting.EndregasWarriors.Common.Model;
 
 namespace UnityUXTesting.EndregasWarriors.DataSending
 {
@@ -35,8 +36,16 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             EditorApplication.playModeStateChanged += change => ExitPlayMode(change);
 #endif
 
-            GameRecordingServiceImpl.eventDelegate.gameRecComplete += GameRecComplete;
+            GameRecordingServiceImpl.eventDelegate.GameRecComplete += GameRecComplete;
             GameRecordingServiceImpl.eventDelegate.OnError += OnError;
+
+            PlayRunServiceImpl.eventDelegate.PlayReportComplete += PlayReportComplete;
+            PlayRunServiceImpl.eventDelegate.OnError += OnError;
+        }
+
+        private void PlayReportComplete()
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -91,14 +100,32 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
         {
             // ToDo: pop-up with informations
             Debug.Log("Error on sending video Data");
-            GameRecordingServiceImpl.eventDelegate.gameRecComplete -= GameRecComplete;
-            GameRecordingServiceImpl.eventDelegate.OnError -= OnError;
+
+            switch (error)
+            {
+                case CaptureSettings.ErrorCodeType.VIDEO_NOT_SENT:
+                {
+                    GameRecordingServiceImpl.eventDelegate.GameRecComplete -= GameRecComplete;
+                    GameRecordingServiceImpl.eventDelegate.OnError -= OnError;
+                    break;
+                }
+                case CaptureSettings.ErrorCodeType.REPORT_NOT_SEND:
+                {
+                    PlayRunServiceImpl.eventDelegate.PlayReportComplete -= PlayReportComplete;
+                    PlayRunServiceImpl.eventDelegate.OnError -= OnError;
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
             permissionsGranted++;
         }
 
         private void GameRecComplete(string finalfilepath)
         {
-            GameRecordingServiceImpl.eventDelegate.gameRecComplete -= GameRecComplete;
+            GameRecordingServiceImpl.eventDelegate.GameRecComplete -= GameRecComplete;
             GameRecordingServiceImpl.eventDelegate.OnError -= OnError;
             permissionsGranted++;
         }
