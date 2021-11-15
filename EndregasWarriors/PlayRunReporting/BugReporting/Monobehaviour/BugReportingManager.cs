@@ -9,14 +9,14 @@ namespace UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour
 {
     public class BugReportingManager : BugReportingManagerBase
     {
-        public TMP_InputField name;
+        public TMP_InputField bugName;
         public TMP_InputField description;
         public TMP_InputField numberOfSec;
         
         public static BugReportingManager _instance;
         
         [NonSerialized]
-        public List<Bug> bugs;
+        public List<Bug> bugs = new List<Bug>();
 
         protected override void Awake()
         {
@@ -39,14 +39,19 @@ namespace UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour
             Bug newBug = new Bug()
             {
                 bugDescription = description.text,
-                bugName = name.text,
+                bugName = bugName.text,
                 timeVideoReference = Utils.MathUtils.CreateTimeInterval(int.Parse(numberOfSec.text), countedTime)
             };
 
             bugs.Add(newBug);
+            ResetInputValue();
+        }
 
+        public void ResetInputValue()
+        {
+            
             description.text = "";
-            name.text = "";
+            bugName.text = "";
             numberOfSec.text = "";
         }
         

@@ -13,14 +13,16 @@ MonoBehaviour:
   m_Name: PathConfig
   m_EditorClassIdentifier: 
   serverAddress: http://localhost:8080
-  gameName: dddd
-  currentBuildID: sadan2
+  gameName: rffd
+  currentBuildID: 333
   keys:
+  - rffd
   - dddd
   - ddd
   - yyy
   - hello then
   values:
+  - 333
   - sadan2
   - sss
   - ttttt

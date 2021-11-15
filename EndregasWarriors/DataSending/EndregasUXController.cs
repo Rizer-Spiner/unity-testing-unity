@@ -3,14 +3,13 @@ using System.Collections;
 using UnityEditor;
 using UnityEngine;
 using UnityUXTesting.EndregasWarriors.Common;
-using UnityUXTesting.EndregasWarriors.Common.Model;
 
 namespace UnityUXTesting.EndregasWarriors.DataSending
 {
     public class EndregasUXController : MonoBehaviour
     {
         private static EndregasUXController _instance;
-        private int waitingPermissions = 1;
+        private int waitingPermissions = 2;
         private int permissionsGranted = 0;
 
         private bool userRequestedQuit = false;
@@ -41,11 +40,6 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
 
             PlayRunServiceImpl.eventDelegate.PlayReportComplete += PlayReportComplete;
             PlayRunServiceImpl.eventDelegate.OnError += OnError;
-        }
-
-        private void PlayReportComplete()
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -99,7 +93,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
         private void OnError(CaptureSettings.ErrorCodeType error)
         {
             // ToDo: pop-up with informations
-            Debug.Log("Error on sending video Data");
+            Debug.Log("Error on sending Data");
 
             switch (error)
             {
@@ -127,6 +121,13 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
         {
             GameRecordingServiceImpl.eventDelegate.GameRecComplete -= GameRecComplete;
             GameRecordingServiceImpl.eventDelegate.OnError -= OnError;
+            permissionsGranted++;
+        }
+        
+        private void PlayReportComplete()
+        {
+            PlayRunServiceImpl.eventDelegate.PlayReportComplete -= PlayReportComplete;
+            PlayRunServiceImpl.eventDelegate.OnError -= OnError;
             permissionsGranted++;
         }
     }

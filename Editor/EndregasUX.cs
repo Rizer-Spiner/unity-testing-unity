@@ -88,11 +88,13 @@ namespace UnityUXTesting.Editor
             if (GUILayout.Button("Add new game registry"))
             {
                 addNewGameButtonPressed = true;
+                addNewBuildButtonPressed = false;
             }
 
             if (GUILayout.Button("Add new build"))
             {
                 addNewBuildButtonPressed = true;
+                addNewGameButtonPressed = false;
             }
 
             if (addNewGameButtonPressed)
