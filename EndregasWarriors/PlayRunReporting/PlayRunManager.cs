@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour;
 using UnityUXTesting.EndregasWarriors.Common.Model;
@@ -70,7 +71,7 @@ namespace UnityUXTesting.EndregasWarriors.PlayRunReporting
                 bugReport = bugReport.ToArray(),
                 buildRef = configuration.currentBuildID,
                 gameRef = configuration.gameName,
-                videoRef = GameRecordingBrain._instance.finalVideoFilePath
+                videoRef = new FileInfo(GameRecordingBrain._instance.finalVideoFilePath).Name
             };
         }
 
