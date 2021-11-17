@@ -324,6 +324,7 @@ namespace UnityUXTesting.Editor
 
         private IEnumerator Connect(string address)
         {
+            
             UnityWebRequest request = UnityWebRequest.Get(address + "/connect");
 
             yield return request.SendWebRequest();
