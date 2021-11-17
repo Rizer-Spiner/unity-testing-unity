@@ -62,7 +62,7 @@ namespace UnityUXTesting.EndregasWarriors.Common
 
             public class JSONUtils
             {
-                public static Dictionary<string, string> convertToDictionary(string json)
+                public static Dictionary<string, string> ConvertToDictionary(string json)
                 {
                     Dictionary<string, string> dict = new Dictionary<string, string>();
                     

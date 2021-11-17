@@ -72,38 +72,43 @@ namespace UnityUXTesting.Editor
             if (GUILayout.Button("Disconnect"))
             {
                 Disconnect();
+                Repaint();
             }
-
-            GUILayout.Space(20);
-            EditorGUILayout.LabelField("Currently connected to: " + subject.serverAddress);
-            GUILayout.Space(10);
-
-            GameNameIndex = EditorGUILayout.Popup("Game name", GameNameIndex,
-                subject.ServerPackageDictionary.Keys.ToArray());
-            subject.gameName = subject.ServerPackageDictionary.Keys.ToArray()[GameNameIndex];
-            subject.currentBuildID = subject.ServerPackageDictionary[subject.gameName];
-
-            EditorGUILayout.LabelField("Current build: " + subject.currentBuildID);
-
-            if (GUILayout.Button("Add new game registry"))
+            else
             {
-                addNewGameButtonPressed = true;
-            }
+                GUILayout.Space(20);
+                EditorGUILayout.LabelField("Currently connected to: " + subject.serverAddress);
+                GUILayout.Space(10);
 
-            if (GUILayout.Button("Add new build"))
-            {
-                addNewBuildButtonPressed = true;
-            }
+                GameNameIndex = EditorGUILayout.Popup("Game name", GameNameIndex,
+                    subject.ServerPackageDictionary.Keys.ToArray());
+                subject.gameName = subject.ServerPackageDictionary.Keys.ToArray()[GameNameIndex];
+                subject.currentBuildID = subject.ServerPackageDictionary[subject.gameName];
 
-            if (addNewGameButtonPressed)
-            {
-                AddGamePopView();
-            }
+                EditorGUILayout.LabelField("Current build: " + subject.currentBuildID);
+
+                if (GUILayout.Button("Add new game registry"))
+                {
+                    addNewGameButtonPressed = true;
+                    addNewBuildButtonPressed = false;
+                }
+
+                if (GUILayout.Button("Add new build"))
+                {
+                    addNewBuildButtonPressed = true;
+                    addNewGameButtonPressed = false;
+                }
+
+                if (addNewGameButtonPressed)
+                {
+                    AddGamePopView();
+                }
 
 
-            if (addNewBuildButtonPressed)
-            {
-                AddNewBuildPopView();
+                if (addNewBuildButtonPressed)
+                {
+                    AddNewBuildPopView();
+                }
             }
         }
 
@@ -115,8 +120,13 @@ namespace UnityUXTesting.Editor
 
             if (GUILayout.Button("Add game"))
             {
-                addNewBuildButtonPressed = false;
-                this.StartCoroutine(AddGameName(newGameName, newBuildName));
+                if (newGameName.Equals("") || newBuildName.Equals(""))
+                    Debug.LogWarning("EndregasUX::Configuration: Please provide all necessary input!");
+                else
+                {
+                    addNewBuildButtonPressed = false;
+                    this.StartCoroutine(AddGameName(newGameName, newBuildName));
+                }
             }
         }
 
@@ -127,8 +137,13 @@ namespace UnityUXTesting.Editor
 
             if (GUILayout.Button("Add build"))
             {
-                addNewGameButtonPressed = false;
-                this.StartCoroutine(AddNewBuild(newBuildName));
+                if (newBuildName.Equals(""))
+                    Debug.LogWarning("EndregasUX::Configuration: Please provide all necessary input!");
+                else
+                {
+                    addNewGameButtonPressed = false;
+                    this.StartCoroutine(AddNewBuild(newBuildName));
+                }
             }
         }
 
@@ -172,7 +187,12 @@ namespace UnityUXTesting.Editor
 
             if (GUILayout.Button("Add game"))
             {
-                this.StartCoroutine(AddGameName(newGameName, newBuildName));
+                if (newGameName.Equals("") || newBuildName.Equals(""))
+                    Debug.LogWarning("EndregasUX::Configuration: Please provide all necessary input!");
+                else
+                {
+                    this.StartCoroutine(AddGameName(newGameName, newBuildName));
+                }
             }
         }
 
@@ -293,11 +313,11 @@ namespace UnityUXTesting.Editor
                 subject.ServerPackageDictionary.Add(subject.gameName, newBuildID);
                 subject.currentBuildID = newBuildID;
             }
-      
+
             newGameName = "";
             newBuildName = "";
             addNewBuildButtonPressed = false;
-            
+
             EditorUtility.SetDirty(target: subject);
         }
 
@@ -321,11 +341,12 @@ namespace UnityUXTesting.Editor
             }
             else
             {
-                subject.ServerPackageDictionary = Utils.JSONUtils.convertToDictionary(request.downloadHandler.text);
+                subject.ServerPackageDictionary = Utils.JSONUtils.ConvertToDictionary(request.downloadHandler.text);
                 subject.keys = subject.ServerPackageDictionary.Keys.ToArray();
                 subject.values = subject.ServerPackageDictionary.Values.ToArray();
                 subject.serverAddress = address;
             }
+
             EditorUtility.SetDirty(target: subject);
         }
 
