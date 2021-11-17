@@ -13,10 +13,10 @@ namespace UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour
 
         protected override void Update()
         {
-            if (GameRecordingBrain._instance.status == CaptureSettings.StatusType.STARTED)
-            {
+            // if (GameRecordingBrain._instance.status == CaptureSettings.StatusType.STARTED)
+            // {
                 countedTime += Time.deltaTime;
-            }
+            // }
             base.Update();
         }
     }

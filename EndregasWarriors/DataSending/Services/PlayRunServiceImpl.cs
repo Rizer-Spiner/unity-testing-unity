@@ -20,11 +20,9 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
 
         public IEnumerator PostPlayRunReport(PlayRunReport report)
         {
-            TypeConverter objConverter = TypeDescriptor.GetConverter(report.GetType());
-            byte[] data = (byte[]) objConverter.ConvertTo(report, typeof(byte[]));
-
+            
             WWWForm form = new WWWForm();
-            form.AddBinaryData("report", data);
+            form.AddField("report", JsonUtility.ToJson(report));
 
             string url = String.Format("{0}/playRunReport/add", _config.serverAddress);
             UnityWebRequest request = UnityWebRequest.Post(url, form);

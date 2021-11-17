@@ -68,12 +68,18 @@ namespace UnityUXTesting.EndregasWarriors.Common
                         start = 0f,
                         end = currentTime
                     };
-                else
+                else if (secondsBeforeBug <= 0)
                     return new TimeInterval()
                     {
-                        start = currentTime - secondsBeforeBug,
+                        start = currentTime - 10f,
                         end = currentTime
                     };
+                else return new TimeInterval()
+                {
+                    start = currentTime - secondsBeforeBug,
+                    end = currentTime
+                };
+
             }
         }
 

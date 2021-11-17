@@ -75,6 +75,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             if (change == PlayModeStateChange.ExitingPlayMode && !userRequestedQuit)
             {
                 userRequestedQuit = true;
+                // ToDo: pop-up with informations
                 EditorApplication.isPlaying = true;
             }
         }
@@ -84,6 +85,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             if (!userRequestedQuit)
             {
                 userRequestedQuit = true;
+                // ToDo: pop-up with informations
                 return false;
             }
             else return false;
