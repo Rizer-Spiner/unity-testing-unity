@@ -1611,7 +1611,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1813921456330087320}
         m_MethodName: SetActive
         m_Mode: 6
         m_Arguments:
@@ -2521,7 +2521,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 3936336981938418953}
         m_MethodName: AddBug
         m_Mode: 1
         m_Arguments:
@@ -2595,7 +2595,7 @@ MonoBehaviour:
   _antiAliasing: 2
   encodeQuality: 1
   _targetFramerate: 2
-  configuration: {fileID: 0}
+  configuration: {fileID: 11400000, guid: c78f53ffbdba42478a1956b88a7bb070, type: 2}
 --- !u!114 &7000803046336493610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2603,7 +2603,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5497718947762806295}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ddc720d3b0574980a66f73335a943ad3, type: 3}
   m_Name: 
@@ -2624,8 +2624,8 @@ MonoBehaviour:
   bugName: {fileID: 2709717061383974179}
   description: {fileID: 6084415158029991436}
   numberOfSec: {fileID: 5864612626111452056}
-  reportMenu: {fileID: 0}
-  warningLabel: {fileID: 0}
+  reportMenu: {fileID: 1813921456330087320}
+  warningLabel: {fileID: 1779464899726802379}
 --- !u!1 &6222995862923435092
 GameObject:
   m_ObjectHideFlags: 0
