@@ -412,7 +412,7 @@ GameObject:
   - component: {fileID: 2387061933000534642}
   - component: {fileID: 6250567940890185475}
   m_Layer: 0
-  m_Name: BugReporting Canvas
+  m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -869,7 +869,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6645125173207862614}
   m_Layer: 0
-  m_Name: TimeInterval
+  m_Name: timeInterval
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -894,7 +894,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -3.799998}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1686281313634905208
@@ -931,7 +931,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.80000305, y: 5.799996}
+  m_AnchoredPosition: {x: 0.80000305, y: 1.9999979}
   m_SizeDelta: {x: 72.230515, y: 63.28679}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1714794829141331301
@@ -1215,7 +1215,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3329860107358667692
 Transform:
   m_ObjectHideFlags: 0
@@ -1246,7 +1246,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5955281368372951082
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1264,7 +1264,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -9}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1913875627537233352
@@ -1390,14 +1390,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 2
+  m_ContentType: 9
   m_InputType: 0
   m_AsteriskChar: 42
   m_KeyboardType: 4
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 2
+  m_CharacterValidation: 1
   m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 0
@@ -1610,7 +1610,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2861407006953470744}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 1
 --- !u!1 &2999386078487226712
 GameObject:
   m_ObjectHideFlags: 0
@@ -2388,7 +2399,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.8, y: 5.8}
+  m_AnchoredPosition: {x: 0.8, y: 2}
   m_SizeDelta: {x: 72.230515, y: 63.28679}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &5268723767828158399
@@ -2404,7 +2415,7 @@ GameObject:
   - component: {fileID: 7593124478913337363}
   - component: {fileID: 8051189195208080036}
   m_Layer: 0
-  m_Name: Button
+  m_Name: Submit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2427,7 +2438,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 33.6, y: -39.5}
+  m_AnchoredPosition: {x: 33.6, y: -43.3}
   m_SizeDelta: {x: 21.618042, y: 10.962116}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2860236931683046131
@@ -2509,7 +2520,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7593124478913337363}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_MethodName: AddBug
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
 --- !u!1 &5497718947762806295
 GameObject:
   m_ObjectHideFlags: 0
@@ -2581,7 +2603,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5497718947762806295}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ddc720d3b0574980a66f73335a943ad3, type: 3}
   m_Name: 
@@ -2603,6 +2625,7 @@ MonoBehaviour:
   description: {fileID: 6084415158029991436}
   numberOfSec: {fileID: 5864612626111452056}
   reportMenu: {fileID: 0}
+  warningLabel: {fileID: 0}
 --- !u!1 &6222995862923435092
 GameObject:
   m_ObjectHideFlags: 0
@@ -2775,8 +2798,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 234, y: 45.5}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 232.5, y: 49.5}
+  m_SizeDelta: {x: 2.8479614, y: 2.4624329}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3605926025010660516
 CanvasRenderer:
@@ -2825,7 +2848,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8744345008645651124}
   m_Layer: 0
-  m_Name: BugReposting UI
+  m_Name: BugReporting UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
