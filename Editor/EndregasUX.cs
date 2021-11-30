@@ -25,7 +25,7 @@ namespace UnityUXTesting.Editor
         private static void ShowWindow()
         {
             subject = (PathConfigScriptable) AssetDatabase.LoadAssetAtPath(
-                "Assets/UnityUXTesting/EndregasWarriors/Common/PathConfig.asset",
+                "Assets/UnityUXTesting/EndregasWarriors/Common/Settings/PathConfig.asset",
                 typeof(PathConfigScriptable));
 
             EndregasUX window = (EndregasUX) GetWindow(typeof(EndregasUX));
@@ -72,38 +72,43 @@ namespace UnityUXTesting.Editor
             if (GUILayout.Button("Disconnect"))
             {
                 Disconnect();
+                Repaint();
             }
-
-            GUILayout.Space(20);
-            EditorGUILayout.LabelField("Currently connected to: " + subject.serverAddress);
-            GUILayout.Space(10);
-
-            GameNameIndex = EditorGUILayout.Popup("Game name", GameNameIndex,
-                subject.ServerPackageDictionary.Keys.ToArray());
-            subject.gameName = subject.ServerPackageDictionary.Keys.ToArray()[GameNameIndex];
-            subject.currentBuildID = subject.ServerPackageDictionary[subject.gameName];
-
-            EditorGUILayout.LabelField("Current build: " + subject.currentBuildID);
-
-            if (GUILayout.Button("Add new game registry"))
+            else
             {
-                addNewGameButtonPressed = true;
-            }
+                GUILayout.Space(20);
+                EditorGUILayout.LabelField("Currently connected to: " + subject.serverAddress);
+                GUILayout.Space(10);
 
-            if (GUILayout.Button("Add new build"))
-            {
-                addNewBuildButtonPressed = true;
-            }
+                GameNameIndex = EditorGUILayout.Popup("Game name", GameNameIndex,
+                    subject.ServerPackageDictionary.Keys.ToArray());
+                subject.gameName = subject.ServerPackageDictionary.Keys.ToArray()[GameNameIndex];
+                subject.currentBuildID = subject.ServerPackageDictionary[subject.gameName];
 
-            if (addNewGameButtonPressed)
-            {
-                AddGamePopView();
-            }
+                EditorGUILayout.LabelField("Current build: " + subject.currentBuildID);
+
+                if (GUILayout.Button("Add new game registry"))
+                {
+                    addNewGameButtonPressed = true;
+                    addNewBuildButtonPressed = false;
+                }
+
+                if (GUILayout.Button("Add new build"))
+                {
+                    addNewBuildButtonPressed = true;
+                    addNewGameButtonPressed = false;
+                }
+
+                if (addNewGameButtonPressed)
+                {
+                    AddGamePopView();
+                }
 
 
-            if (addNewBuildButtonPressed)
-            {
-                AddNewBuildPopView();
+                if (addNewBuildButtonPressed)
+                {
+                    AddNewBuildPopView();
+                }
             }
         }
 
@@ -321,7 +326,7 @@ namespace UnityUXTesting.Editor
             }
             else
             {
-                subject.ServerPackageDictionary = Utils.JSONUtils.convertToDictionary(request.downloadHandler.text);
+                subject.ServerPackageDictionary = Utils.JSONUtils.ConvertToDictionary(request.downloadHandler.text);
                 subject.keys = subject.ServerPackageDictionary.Keys.ToArray();
                 subject.values = subject.ServerPackageDictionary.Values.ToArray();
                 subject.serverAddress = address;

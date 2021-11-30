@@ -17,6 +17,7 @@
             FFMPEG_NOT_FOUND = -2,
             VIDEO_AUDIO_MERGE_TIMEOUT = -3,
             VIDEO_NOT_SENT= -4,
+            REPORT_NOT_SEND = -5
         }
 
         public enum FrameSizeType
