@@ -30,6 +30,10 @@
 
         public delegate void GameRecordingComplete(string finalFilePath);
 
-        public GameRecordingComplete gameRecComplete;
+        public GameRecordingComplete GameRecComplete;
+        
+        public delegate void PlayRunReportComplete();
+
+        public PlayRunReportComplete PlayReportComplete;
     }
 }

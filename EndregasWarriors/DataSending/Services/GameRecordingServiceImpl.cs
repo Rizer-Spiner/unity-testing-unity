@@ -48,7 +48,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             else
             {
                 Debug.Log("Response:  " + request.downloadHandler.text);
-                eventDelegate.gameRecComplete?.Invoke(filePath);
+                eventDelegate.GameRecComplete?.Invoke(filePath);
             }
         }
     }

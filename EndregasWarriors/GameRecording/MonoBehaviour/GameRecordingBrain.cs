@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityUXTesting.EndregasWarriors.Common;
 using UnityUXTesting.EndregasWarriors.DataSending;
@@ -13,8 +12,7 @@ using UnityUXTesting.EndregasWarriors.GameRecording;
 
 public class GameRecordingBrain : GameRecordingBrainBase
 {
-    [NonSerialized]
-    public CaptureSettings.StatusType status;
+    [NonSerialized] public CaptureSettings.StatusType status;
     public PathConfigScriptable configuration;
 
     public static GameRecordingBrain _instance;
@@ -27,6 +25,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
     private bool areComponentsInitialized;
     private IGameRecordingService _service;
 
+    public EventDelegate eventDelegate;
 
     protected override void Awake()
     {
