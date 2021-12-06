@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour;
 using UnityUXTesting.EndregasWarriors.Common.Model;
 using UnityUXTesting.EndregasWarriors.DataSending;
+using UnityUXTesting.EndregasWarriors.PlayRunReporting.Checkpoints;
 
 namespace UnityUXTesting.EndregasWarriors.PlayRunReporting
 {
@@ -25,7 +26,7 @@ namespace UnityUXTesting.EndregasWarriors.PlayRunReporting
             }
             else
             {
-                Destroy(this);
+                Destroy(gameObject);
                 return;
             }
 
@@ -65,10 +66,12 @@ namespace UnityUXTesting.EndregasWarriors.PlayRunReporting
         private PlayRunReport CreateReport()
         {
             List<Bug> bugReport = BugReportingManager._instance.bugs;
+            List<LevelData> levelDatas = LevelDataManager._instance.levelData;
 
             return new PlayRunReport()
             {
                 bugReport = bugReport.ToArray(),
+                levelData = levelDatas.ToArray(),
                 buildRef = configuration.currentBuildID,
                 gameRef = configuration.gameName,
                 videoRef = new FileInfo(GameRecordingBrain._instance.finalVideoFilePath).Name

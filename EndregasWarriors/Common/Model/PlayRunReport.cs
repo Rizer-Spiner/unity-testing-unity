@@ -10,5 +10,6 @@ namespace UnityUXTesting.EndregasWarriors.Common.Model
         public string videoRef { get; set; }
 
         public Bug[] bugReport { get; set; }
+        public LevelData[] levelData { get; set; }
     }
 }

@@ -37,7 +37,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
         }
         else
         {
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
 

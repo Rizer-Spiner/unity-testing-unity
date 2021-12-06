@@ -29,7 +29,7 @@ namespace UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour
             }
             else
             {
-                Destroy(this);
+                Destroy(gameObject);
                 return;
             }
 
