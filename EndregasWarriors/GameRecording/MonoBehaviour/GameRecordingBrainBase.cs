@@ -134,7 +134,7 @@ public class GameRecordingBrainBase : UXTool
         
         videoFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5)); 
         audioFilePath = PathConfig.SaveFolder + Utils.StringUtils.GetWavFileName(Utils.StringUtils.GetRandomString(5));
-        finalVideoFilePath = PathConfig.saveFolder + Utils.StringUtils.GetMp4FileName(Utils.StringUtils.GetRandomString(5));
+        finalVideoFilePath = PathConfig.saveFolder + String.Format("{0:d}_{1}.mp4", Utils.StringUtils.GetTimeString(), Environment.UserName);;
         
 
         videoLibAPI = VideoCaptureLib_Get(

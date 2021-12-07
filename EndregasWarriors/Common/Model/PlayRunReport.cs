@@ -5,10 +5,11 @@ namespace UnityUXTesting.EndregasWarriors.Common.Model
     [Serializable]
     public class PlayRunReport
     {
-        public string buildRef { get; set; }
-        public string gameRef { get; set; }
-        public string videoRef { get; set; }
+        public string buildRef;
+        public string gameRef;
+        public string videoRef;
 
-        public Bug[] bugReport { get; set; }
+        public Bug[] bugReport;
+        //public LevelData[] levelData { get; set; }
     }
 }

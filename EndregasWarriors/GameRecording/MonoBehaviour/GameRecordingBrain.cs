@@ -37,7 +37,7 @@ public class GameRecordingBrain : GameRecordingBrainBase
         }
         else
         {
-            Destroy(this);
+            Destroy(gameObject);
             return;
         }
 
@@ -94,10 +94,12 @@ public class GameRecordingBrain : GameRecordingBrainBase
         }
     }
 
+#if UNITY_EDITOR
     private void ExitPlayMode(PlayModeStateChange change)
     {
         if (change == PlayModeStateChange.ExitingPlayMode) WantsToQuit();
     }
+#endif    
 
     private bool WantsToQuit()
     {

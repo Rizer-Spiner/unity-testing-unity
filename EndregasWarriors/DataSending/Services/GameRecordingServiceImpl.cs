@@ -19,8 +19,6 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
 
         public IEnumerator PostPlayThrough(string filePath)
         {
-            String fileName = String.Format("{0:d}_{1}.mp4", Utils.StringUtils.GetTimeString(), Environment.UserName);
-
             if (!File.Exists(filePath))
             {
                 Debug.LogWarning("File at " + filePath + " does not exists. Please provide a valid file path!");
@@ -29,9 +27,9 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
             }
 
             WWWForm form = new WWWForm();
-            form.AddField("game",  _config.gameName);
+            form.AddField("game", _config.gameName);
             form.AddField("build", _config.currentBuildID);
-            form.AddBinaryData("file", File.ReadAllBytes(filePath), fileName);
+            form.AddBinaryData("file", File.ReadAllBytes(filePath), new FileInfo(filePath).Name);
 
             string url = String.Format("{0}/video", _config.serverAddress);
             UnityWebRequest request = UnityWebRequest.Post(url, form);

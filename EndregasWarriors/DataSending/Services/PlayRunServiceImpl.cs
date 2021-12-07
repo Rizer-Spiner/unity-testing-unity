@@ -20,15 +20,14 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
 
         public IEnumerator PostPlayRunReport(PlayRunReport report)
         {
-            
-            WWWForm form = new WWWForm();
-            form.AddField("report", JsonUtility.ToJson(report));
+            // WWWForm form = new WWWForm();
+            // form.AddField("report", JsonUtility.ToJson(report));
+            string url = String.Format("{0}/playRunReport", _config.serverAddress);
+            UnityWebRequest request = UnityWebRequest.Put(url, JsonUtility.ToJson(report));
 
-            string url = String.Format("{0}/playRunReport/add", _config.serverAddress);
-            UnityWebRequest request = UnityWebRequest.Post(url, form);
+            request.SetRequestHeader("Content-Type", "application/json");
 
             yield return request.SendWebRequest();
-
             if (request.isNetworkError || request.isHttpError)
             {
                 Debug.Log("Response: " + request.error);

@@ -74,12 +74,12 @@ namespace UnityUXTesting.EndregasWarriors.Common
                         start = currentTime - 10f,
                         end = currentTime
                     };
-                else return new TimeInterval()
-                {
-                    start = currentTime - secondsBeforeBug,
-                    end = currentTime
-                };
-
+                else
+                    return new TimeInterval()
+                    {
+                        start = currentTime - secondsBeforeBug,
+                        end = currentTime
+                    };
             }
         }
 
@@ -88,21 +88,27 @@ namespace UnityUXTesting.EndregasWarriors.Common
             public static Dictionary<string, string> ConvertToDictionary(string json)
             {
                 Dictionary<string, string> dict = new Dictionary<string, string>();
-
-                json = json.Remove(json.Length - 1).Remove(0, 1);
-
-                string[] pairs = json.Split(',');
-
-                foreach (var pair in pairs)
+                if (json.Equals("{}"))
                 {
-                    string[] keyValue = pair.Split(':');
-                    string key = keyValue[0].Remove(keyValue[0].Length - 1).Remove(0, 1);
-                    string value = keyValue[1].Remove(keyValue[1].Length - 1).Remove(0, 1);
-
-                    dict.Add(key, value);
+                    return dict;
                 }
+                else
+                {
+                    json = json.Remove(json.Length - 1).Remove(0, 1);
 
-                return dict;
+                    string[] pairs = json.Split(',');
+
+                    foreach (var pair in pairs)
+                    {
+                        string[] keyValue = pair.Split(':');
+                        string key = keyValue[0].Remove(keyValue[0].Length - 1).Remove(0, 1);
+                        string value = keyValue[1].Remove(keyValue[1].Length - 1).Remove(0, 1);
+
+                        dict.Add(key, value);
+                    }
+
+                    return dict;
+                }
             }
         }
     }

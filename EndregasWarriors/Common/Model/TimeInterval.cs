@@ -5,7 +5,7 @@ namespace UnityUXTesting.EndregasWarriors.Common.Model
     [Serializable]
     public class TimeInterval
     {
-        public float start { get; set; }
-        public float end { get; set; }
+        public float start;
+        public float end;
     }
 }

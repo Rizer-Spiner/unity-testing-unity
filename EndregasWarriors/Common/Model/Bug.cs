@@ -5,10 +5,10 @@ namespace UnityUXTesting.EndregasWarriors.Common.Model
     [Serializable]
     public class Bug
     {
-        public string bugName { get; set; }
+        public string bugName;
 
-        public string bugDescription { get; set; }
-        
-        public TimeInterval timeVideoReference { get; set; }
+        public string bugDescription;
+
+        public TimeInterval timeVideoReference;
     }
 }

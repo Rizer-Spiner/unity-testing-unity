@@ -56,6 +56,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
                 {
 #if !UNITY_EDITOR
                     Application.wantsToQuit -= ApplicationOnwantsToQuit;
+                    return true;
 #else
                     EditorApplication.playModeStateChanged -= change2 => ExitPlayMode(change2);
                     return true;
@@ -70,6 +71,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
 #endif
         }
 
+#if UNITY_EDITOR     
         private void ExitPlayMode(PlayModeStateChange change)
         {
             if (change == PlayModeStateChange.ExitingPlayMode && !userRequestedQuit)
@@ -79,7 +81,7 @@ namespace UnityUXTesting.EndregasWarriors.DataSending
                 EditorApplication.isPlaying = true;
             }
         }
-
+#endif
         private bool ApplicationOnwantsToQuit()
         {
             if (!userRequestedQuit)

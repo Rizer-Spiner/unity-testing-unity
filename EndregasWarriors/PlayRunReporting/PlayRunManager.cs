@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEngine;
 using UnityUXTesting.EndregasWarriors.BugReporting.Monobehaviour;
 using UnityUXTesting.EndregasWarriors.Common.Model;
 using UnityUXTesting.EndregasWarriors.DataSending;
+
+// using UnityUXTesting.EndregasWarriors.PlayRunReporting.Checkpoints;
 
 namespace UnityUXTesting.EndregasWarriors.PlayRunReporting
 {
@@ -43,6 +46,13 @@ namespace UnityUXTesting.EndregasWarriors.PlayRunReporting
 #endif
         }
 
+#if UNITY_EDITOR
+        private void ExitPlayMode(PlayModeStateChange change)
+        {
+            if (change == PlayModeStateChange.ExitingPlayMode) WantsToQuit();
+        }
+#endif
+
 
         private bool WantsToQuit()
         {
@@ -65,19 +75,18 @@ namespace UnityUXTesting.EndregasWarriors.PlayRunReporting
         private PlayRunReport CreateReport()
         {
             List<Bug> bugReport = BugReportingManager._instance.bugs;
+            //List<LevelData> levelDatas = LevelDataManager._instance.levelData;
 
-            return new PlayRunReport()
+            PlayRunReport report = new PlayRunReport()
             {
                 bugReport = bugReport.ToArray(),
+                //levelData = levelDatas.ToArray(),
                 buildRef = configuration.currentBuildID,
                 gameRef = configuration.gameName,
                 videoRef = new FileInfo(GameRecordingBrain._instance.finalVideoFilePath).Name
             };
-        }
 
-        private void ExitPlayMode(PlayModeStateChange change)
-        {
-            if (change == PlayModeStateChange.ExitingPlayMode) WantsToQuit();
+            return report;
         }
     }
 }
